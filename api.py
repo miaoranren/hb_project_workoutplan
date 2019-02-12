@@ -1,4 +1,4 @@
-from model import Category, Exercise, Image, connect_to_db, db
+from model import Exercise, Image, Workout, WorkoutExercise, User, connect_to_db, db
 from server import app
 from helper import call_api, detect_en
 
@@ -47,7 +47,20 @@ if __name__ == "__main__":
     db.create_all()
 
     # set_val_user_id()
-
     valid_exercises_id_list = load_exercise()
     print(len(valid_exercises_id_list))
     load_image(valid_exercises_id_list)
+
+    workout_1 = Workout(workout_id=1, priority=1, schedualed_at=1)
+    db.session.add(workout_1)
+    db.session.commit()
+
+    workout_exercise_1 = WorkoutExercise(table_id=1, workout_id=1, exercise_id=453)
+    workout_exercise_2 = WorkoutExercise(table_id=2, workout_id=1, exercise_id=410)
+    db.session.add(workout_exercise_1)
+    db.session.add(workout_exercise_2)
+    db.session.commit()
+
+    user_1 = User(user_id=1, workout_id=1)
+    db.session.add(user_1)
+    db.session.commit()
