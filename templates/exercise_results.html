@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
-
-    <h1> Results:</h1>
-    <ul>
+<h1>Results:</h1>
+<ul>
     {% for exercise in exercises %}
-        <li>
-            {{exercise.name}}
-        </li>
-
+    <li>
+        {{ exercise.name }}
+        <ul>
+            {% for eq in exercise.equipments %}
+            <li>{{eq.equipment_name}}</li>
+            {% endfor %}
+        </ul>
+    </li>
     {% endfor %}
-    </ul>
-
+</ul>
 {% endblock %}

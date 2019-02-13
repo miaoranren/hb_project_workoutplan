@@ -9,8 +9,7 @@ class Category(db.Model):
     category_id = db.Column(db.Integer,primary_key=True)
     category_name = db.Column(db.String(64), nullable=True)
 
-
-    exercises = db.relationship("Exercise")
+    exercises = db.relationship("Exercise", backref="categories")
 
     def __repr__(self):
         return f"<{self.category_code} : {self.category_name}>"
@@ -40,10 +39,11 @@ class Exercise(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True)
 
     image = db.relationship("Image")
-    equipments=db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
+    equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
+    # categories = db.relationship("Category")
 
     def __repr__(self):
-        return f"<{self.name} - {self.category} - {self.equipment}>"
+        return f"<{self.name} - {self.category_id} - {self.equipment}>"
 
 class Image(db.Model):
     __tablename__ = "images"
