@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h1>WorkoutSearch</h1>
+
+  <h2>Equipment:</h2>
+  <form action="/search" method="GET">
+    <input type="checkbox" name="equipment" value="Barbell">Barbell
+    <input type="checkbox" name="equipment"  value="Bench">Bench
+    <input type="checkbox" name="equipment"  value="Dumbbell">Dumbbell
+    <input type="checkbox" name="equipment"  value="Gym mat">Gym mat
+    <input type="checkbox" name="equipment"  value="Incline bench">Incline bench
+    <input type="checkbox" name="equipment"  value="Kettlebell">Kettlebell
+    <input type="checkbox" name="equipment"  value="none(Bodyweight exericise)">none(Bodyweight exericise)
+    <input type="checkbox" name="equipment"  value="Pull-up bar">Pull-up bar
+    <input type="checkbox" name="equipment"  value="Swiss Ball">Swiss Ball
+    <input type="checkbox" name="equipment"  value="SZ-Bar">SZ-Bar
+
+    <input type="submit" name="submit">
+      
+  </form>
+
+ <!--  <h2>Targeted Body Parts:</h2>
+  <form action="/search" method="POST">
+    <input type="checkbox" name="category" value="Abs">Abs
+    <input type="checkbox" name="category" value="Arms">Arms
+    <input type="checkbox" name="category" value="Back">Back
+    <input type="checkbox" name="category" value="Calves">Calves
+    <input type="checkbox" name="category" value="Chest">Chest
+    <input type="checkbox" name="category" value="Legs">Legs
+    <input type="checkbox" name="category" value="Shoulders">Shoulders
+   <input type="submit">
+  </form>
+ -->
+
+{% endblock %}

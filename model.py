@@ -2,38 +2,30 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# class Equipment(db.Model):
-#     __tablename__ = 'equipments'
-#
-#     equipment_name = db.Column(db.String(64), nullable=True)
-#     equipment_id = db.Column(db.Integer, primary_key=True)
 
-#     exercise = db.relationship("Exercise")
+class Category(db.Model):
+    __tablename__ = 'categories'
 
-#     def __repr__(self):
-#         return f"<{self.equipment_id} : {self.equipment_name}>"
+    category_id = db.Column(db.Integer,primary_key=True)
+    category_name = db.Column(db.String(64), nullable=True)
 
-# class Category(db.Model):
-#     __tablename__ = 'categories'
-#
-#     category_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     category_code = db.Column(db.Integer,nullable=True)
-#     category_name = db.Column(db.String(64), nullable=True)
 
-#     def __repr__(self):
-#         return f"<{self.category_code} : {self.category_name}>"
+    exercises = db.relationship("Exercise")
+
+    def __repr__(self):
+        return f"<{self.category_code} : {self.category_name}>"
 
 class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=True)
+    # workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=True)
     username = db.Column(db.String(64), nullable=True)
     password = db.Column(db.String(64), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(16), nullable=True)
 
-    workouts = db.relationship("Workout")
+    # workouts = db.relationship("Workout")
 
     def __repr__(self):
         return f"<User {self.username} - Workout {self.workout_id}>"   
@@ -45,9 +37,10 @@ class Exercise(db.Model):
     name = db.Column(db.String(64), nullable=True)
     description =db.Column(db.String(4096), nullable=True)
     equipment = db.Column(db.ARRAY(db.Integer()), nullable=True)
-    category = db.Column(db.Integer, nullable=True)
+    category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True)
 
     image = db.relationship("Image")
+    equipments=db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
 
     def __repr__(self):
         return f"<{self.name} - {self.category} - {self.equipment}>"
@@ -62,22 +55,45 @@ class Image(db.Model):
     def __repr__(self):
         return f"<{self.exercise_id} - {self.image_link}>"
 
+class Equipment(db.Model):
+    __tablename__ = "equipments"
+
+    equipment_id = db.Column(db.Integer, primary_key=True)
+    equipment_name = db.Column(db.String(64), nullable=False)
+
+    def __repr__(self):
+        return f"<{equipment_id} - {equipment_name}>"
+
+class ExerciseEquipment(db.Model):
+    __tablename__ = "exercise_equipment"
+
+    table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.exercise_id"), nullable=False)
+    equipment_id = db.Column(db.Integer, db.ForeignKey("equipments.equipment_id"), nullable=False)
+
+    def __repr__(self):
+        return f"<{self.exercise_id}> -- <{self.equipment_id}>"
+
 class Workout(db.Model):
     __tablename__ = "workouts"
 
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    weight_unit = db.Column(db.String(64), nullable=True) #helper
-    repetition_unit = db.Column(db.String(64), nullable=True) # helper
+    user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
+    weight_unit_id = db.Column(db.Integer, db.ForeignKey("weight_unit.weight_unit_id"),nullable=True) 
+    repetition_unit = db.Column(db.Integer, db.ForeignKey("rep_unit.rep_unit_id"), nullable=True) 
     weight = db.Column(db.Integer, nullable=True)
     set_number = db.Column(db.Integer, nullable=True)
     rep_number = db.Column(db.Integer, nullable=True)
     priority = db.Column(db.Integer, nullable=False) #####
-    schedualed_at = db.Column(db.Integer, nullable=False)
+    scheduled_at = db.Column(db.Integer, nullable=False)
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
+    users = db.relationship('User')
+    weight_unit = db.relationship("Weight_Unit")
+    rep_unit = db.relationship("Rep_Unit")
 
     def __repr__(self):
-        return f"<{self.workout_id} - {self.exercise_id} - {self.schedualed_at}>"
+        return f"<{self.workout_id} - {self.exercise_id} - {self.scheduled_at}>"
 
 class WorkoutExercise(db.Model):
     __tablename__ = 'workout_exercise'
@@ -89,15 +105,23 @@ class WorkoutExercise(db.Model):
     def __repr__(self):
         return f"<{self.workout_id} has {self.exercise_id}>"
 
-# class UserWorkout(db.Model):
-#     __tablename__ = 'user_workout'
+class Weight_Unit(db.Model):
+    __tablename__ = 'weight_unit'
 
-#     user_workout_id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-#     workout_id = db.Column(db.Integer, db.ForeignKey('workouts.workout_id'), nullable=False)
+    weight_unit_id = db.Column(db.Integer, primary_key=True)
+    weight_unit_name = db.Column(db.String(128))
 
-#     def __repr__(self):
-#         return f"<{self.user_id} - {self.workout_id}>"
+    def __repr__(self):
+        return f"<{self.weight_unit_id} -- {self.weight_unit_name}>"
+
+class Rep_Unit(db.Model):
+    __tablename__ = "rep_unit"
+
+    rep_unit_id = db.Column(db.Integer, primary_key=True)
+    rep_unit_name = db.Column(db.String(128))
+
+    def __repr__(self):
+        return f"<{self.rep_unit_id} -- {self.rep_unit_name}>"
 
 #####################################################################
 # Helper functions

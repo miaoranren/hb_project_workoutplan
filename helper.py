@@ -25,14 +25,14 @@ def detect_en(in_str):
 def get_equipment_code(endpoint, equipment_input):
     # endpoint = "equipment"
     equipment_result_list = call_api(endpoint)
-    
+    equipment = {}
     for result_dict in equipment_result_list:
         code = result_dict['id']
         equipment_name = result_dict['name']
         
         if equipment_name not in equipment:
             equipment[equipment_name] = code
-    return equipment[equipment_input]
+    return equipment[equipment_name]
 
 def get_category_code(endpoint, category_input):
     # endpoint = "equipment"
@@ -50,3 +50,4 @@ def get_category_code(endpoint, category_input):
 #     equipment[]
 # print(get_equipment_code("equipment", "Swiss Ball"))
 # print(get_category_code("exercisecategory", "Arms"))
+# print(call_api('equipment'))

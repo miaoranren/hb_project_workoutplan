@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import connect_to_db, db, Exercise, Image
+from helper import get_equipment_code
 
 
 app = Flask(__name__)
@@ -22,7 +23,25 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    return render_template("Searchpage.html")
+
+@app.route('/search', methods=['GET'])
+def search():
+    equipment_inputs = request.args.getlist("equipment")
+    # print(equipment_inputs)
+    equipment = []
+    for equipment_input in equipment_inputs:
+
+        equipment_code = get_equipment_code("equipment", equipment_input)
+        equipment.append(equipment_code)
+    # equipment_code = get_equipment_code("equipment",equipment_inputs)
+    # equipment.append(equipment_code)
+    print(equipment)
+    exercises = db.session.query(Exercise.equipment == equipment).all()
+    # print(exercises)
+
+    return render_template("exercise_results.html", exercises=exercises)
+
 
 
 
