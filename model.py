@@ -37,9 +37,17 @@ class Exercise(db.Model):
     description =db.Column(db.String(4096), nullable=True)
     equipment = db.Column(db.ARRAY(db.Integer()), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True)
+    weight_unit_id = db.Column(db.Integer, db.ForeignKey("weight_unit.weight_unit_id"),nullable=True) 
+    repetition_unit = db.Column(db.Integer, db.ForeignKey("rep_unit.rep_unit_id"), nullable=True) 
+    weight = db.Column(db.Integer, nullable=True)
+    set_number = db.Column(db.Integer, nullable=True)
+    rep_number = db.Column(db.Integer, nullable=True)
+    priority = db.Column(db.Integer, nullable=True) 
 
     image = db.relationship("Image")
     equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
+    weight_unit = db.relationship("Weight_Unit")
+    rep_unit = db.relationship("Rep_Unit")
     # categories = db.relationship("Category")
 
     def __repr__(self):
@@ -79,18 +87,12 @@ class Workout(db.Model):
 
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
-    weight_unit_id = db.Column(db.Integer, db.ForeignKey("weight_unit.weight_unit_id"),nullable=True) 
-    repetition_unit = db.Column(db.Integer, db.ForeignKey("rep_unit.rep_unit_id"), nullable=True) 
-    weight = db.Column(db.Integer, nullable=True)
-    set_number = db.Column(db.Integer, nullable=True)
-    rep_number = db.Column(db.Integer, nullable=True)
-    priority = db.Column(db.Integer, nullable=True) #####
+
     scheduled_at = db.Column(db.Integer, nullable=True)
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
     users = db.relationship('User', backref="workouts")
-    weight_unit = db.relationship("Weight_Unit")
-    rep_unit = db.relationship("Rep_Unit")
+
 
     def __repr__(self):
         return f"<{self.workout_id} - {self.exercise_id} - {self.scheduled_at}>"

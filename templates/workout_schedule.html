@@ -3,11 +3,13 @@
 <h1>Workout Schedule</h1>
 {% for workout in workout_schedule%}
 <ul>
-    {{ workout.workout_id }}
+    {{ workout.scheduled_at }}
     {% for exercise in workout.exercises %}
     <li>
         {{ exercise.name }}
-    </li>
+
+        {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}}
+        </li>
 {% endfor %}
 </ul>
 {% endfor %}

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Details:</h1>
+<h1>Details: {{ exercise.name }}</h1>
 
-<form action='/addexercises/{{exercise_id}}' method="POST">
+<form action='/addexercises/{{exercise.exercise_id}}' method="POST">
 
     
     <p>

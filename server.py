@@ -99,12 +99,16 @@ def search():
     exercises_2 = list(set(exercises_2))
 
     exercises = exercises_1 + exercises_2
+    session['equipment'] = equipment_inputs
+    session['category'] = category_inputs
 
     return render_template("exercise_results.html", exercises=exercises)
 
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
-    return render_template("add_detail.html", exercise_id=exercise_id)
+
+    exercise = Exercise.query.get(exercise_id)
+    return render_template("add_detail.html", exercise=exercise)
 
 @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
 def addexercises(exercise_id):
@@ -118,13 +122,19 @@ def addexercises(exercise_id):
 
     weight_unit_id = Weight_Unit.query.filter(Weight_Unit.weight_unit_name == weightunit).one().weight_unit_id
     repetition_unit = Rep_Unit.query.filter(Rep_Unit.rep_unit_name == repunit).one().rep_unit_id
+    exercise.weight_unit_id = weight_unit_id
+    exercise.repetition_unit = repetition_unit
+    exercise.weight = weights
+    exercise.set_number = numberofsets
+    exercise.rep_number = reps
 
     workout_created = Workout.query.get(session['workout_id'])
-    workout_created.weight_unit_id = weight_unit_id
-    workout_created.repetition_unit = repetition_unit
-    workout_created.weight = weights
-    workout_created.set_number = numberofsets
-    workout_created.rep_number = reps
+    # workout_created.weight_unit_id = weight_unit_id
+    # workout_created.repetition_unit = repetition_unit
+    # workout_created.weight = weights
+    # workout_created.set_number = numberofsets
+    # workout_created.rep_number = reps
+    workout_created.scheduled_at = daysofweek
 
     # new_workout = Workout(weight_unit_id=weight_unit_id, repetition_unit=repetition_unit,
     #                         weight=weights, set_number=numberofsets, rep_number=reps,
