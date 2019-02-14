@@ -95,7 +95,7 @@ def load_rep_unit():
         db.session.add(rep_unit)
     db.session.commit()
 def load_weight_unit():
-    weight_unit_result_list = call_api("setting-repetitionunit")
+    weight_unit_result_list = call_api("setting-weightunit")
 
     for result_dict in weight_unit_result_list:
 
@@ -127,15 +127,14 @@ if __name__ == "__main__":
     load_image(valid_exercises_id_list)
     
 
-    workout_1 = Workout(workout_id=1, priority=1, scheduled_at=1)
-    db.session.add(workout_1)
-    db.session.commit()
+    # workout_1 = Workout(workout_id=1, priority=1, scheduled_at=1)
+    # db.session.add(workout_1)
+    # db.session.commit()
 
-    workout_exercise_1 = WorkoutExercise(table_id=1, workout_id=1, exercise_id=453)
-    workout_exercise_2 = WorkoutExercise(table_id=2, workout_id=1, exercise_id=410)
-    db.session.add(workout_exercise_1)
-    db.session.add(workout_exercise_2)
-    db.session.commit()
+    # 
+    # db.session.add(workout_exercise_1)
+    # db.session.add(workout_exercise_2)
+    # db.session.commit()
 
     # user_1 = User(user_id=1, workout_id=1)
     # db.session.add(user_1)

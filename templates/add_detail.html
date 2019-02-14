@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Details:</h1>
+
+<form action='/addexercises/{{exercise_id}}' method="POST">
+
+    
+    <p>
+        <label>Select day:</label>
+        <select name="daysofweek">
+            <option value="1">Monday</option>
+            <option value="2">Tuesday</option>
+            <option value="3"> Wednesday</option>
+            <option value="4"> Thursday</option>
+            <option value="5"> Friday</option>
+            <option value="6"> Saturday</option>
+            <option value="7"> Sunday </option>
+
+        </select>
+        <br>
+        <label> Select set number</label>
+        <select name="numberofsets">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <br>
+        <label> Enter reps for each set</label>
+        <input type="text" name="reps">
+        <select name="repunit">
+            <option value="Kilometers">Kilometers</option>
+            <option value="Miles">Miles</option>
+            <option value="Minutes">Minutes</option>
+            <option value="Repetitions">Repetitions</option>
+            <option value="Seconds">Seconds</option>
+            <option value="Until Failure">Until Failure</option>
+        </select>
+
+        <br>
+        <label> Enter weights for each rep</label>
+        <input type="text" name="weights">
+        <select name="weightunit">
+            <option value="Body Weight">Body Weight</option>
+            <option value="kg">kg</option>
+            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+            <option value="lb">lb</option>
+            <option value="Miles Per Hour">Miles Per Hour</option>
+            <option value="Plates">Plates</option>
+        </select>
+
+    </p>
+    <div>
+        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+    </div>
+
+</form>
+
+{% endblock %}

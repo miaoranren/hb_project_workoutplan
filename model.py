@@ -84,11 +84,11 @@ class Workout(db.Model):
     weight = db.Column(db.Integer, nullable=True)
     set_number = db.Column(db.Integer, nullable=True)
     rep_number = db.Column(db.Integer, nullable=True)
-    priority = db.Column(db.Integer, nullable=False) #####
-    scheduled_at = db.Column(db.Integer, nullable=False)
+    priority = db.Column(db.Integer, nullable=True) #####
+    scheduled_at = db.Column(db.Integer, nullable=True)
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
-    users = db.relationship('User')
+    users = db.relationship('User', backref="workouts")
     weight_unit = db.relationship("Weight_Unit")
     rep_unit = db.relationship("Rep_Unit")
 

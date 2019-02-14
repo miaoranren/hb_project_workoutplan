@@ -3,14 +3,14 @@
 <h1>Results:</h1>
 <ul>
     {% for exercise in exercises %}
-    <li>
-        {{ exercise.name }}
-        <ul>
-            {% for eq in exercise.equipments %}
-            <li>{{eq.equipment_name}}</li>
-            {% endfor %}
-        </ul>
-    </li>
+    
+        
+            
+        
+        <li><a href= "/search/{{exercise.exercise_id}}">{{ exercise.name }}</li>
+            
+        
+   
     {% endfor %}
 </ul>
 {% endblock %}
