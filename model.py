@@ -44,10 +44,11 @@ class Exercise(db.Model):
     rep_number = db.Column(db.Integer, nullable=True)
     priority = db.Column(db.Integer, nullable=True) 
 
-    image = db.relationship("Image")
+    images = db.relationship("Image")
     equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
     weight_unit = db.relationship("Weight_Unit")
     rep_unit = db.relationship("Rep_Unit")
+
     # categories = db.relationship("Category")
 
     def __repr__(self):
@@ -88,14 +89,15 @@ class Workout(db.Model):
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
 
-    scheduled_at = db.Column(db.Integer, nullable=True)
+    # scheduled_at = db.Column(db.Integer, nullable=True)
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
     users = db.relationship('User', backref="workouts")
+    scheduled_at_days = db.relationship('Schedule_day', secondary='scheduledday_workout', backref='workouts')
 
 
     def __repr__(self):
-        return f"<{self.workout_id} - {self.exercise_id} - {self.scheduled_at}>"
+        return f"<{self.workout_id} - {self.user_id}>"
 
 class WorkoutExercise(db.Model):
     __tablename__ = 'workout_exercise'
@@ -124,6 +126,28 @@ class Rep_Unit(db.Model):
 
     def __repr__(self):
         return f"<{self.rep_unit_id} -- {self.rep_unit_name}>"
+
+class Schedule_day(db.Model):
+
+    __tablename__ = "scheduled_at_days"
+
+    day_id = db.Column(db.Integer, primary_key=True)
+    day_of_week = db.Column(db.String(64))
+
+
+    def __repr__(self):
+        return f"<{self.day_id} -- {self.day_of_week}>"
+
+class ScheduleWorkout(db.Model):
+
+    __tablename__ = "scheduledday_workout"
+    table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    day_id = db.Column(db.Integer, db.ForeignKey("scheduled_at_days.day_id"), nullable=False)
+    workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
+
+    def __repr__(self):
+        return f"<{self.day_id} -- {self.workout_id}>"
+
 
 #####################################################################
 # Helper functions

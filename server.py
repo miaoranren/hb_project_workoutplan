@@ -3,7 +3,7 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout
+from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout, Schedule_day
 # from helper import get_equipment_code
 
 app = Flask(__name__)
@@ -78,6 +78,7 @@ def add_workout():
     print(new_workout.workout_id)
     return render_template("Searchpage.html")
 
+
 @app.route('/', methods=['POST'])    
 
 @app.route('/search', methods=['GET']) 
@@ -98,7 +99,7 @@ def search():
 
     exercises_2 = list(set(exercises_2))
 
-    exercises = exercises_1 + exercises_2
+    exercises = list(set(exercises_1) & set(exercises_2))
     session['equipment'] = equipment_inputs
     session['category'] = category_inputs
 
@@ -122,29 +123,55 @@ def addexercises(exercise_id):
 
     weight_unit_id = Weight_Unit.query.filter(Weight_Unit.weight_unit_name == weightunit).one().weight_unit_id
     repetition_unit = Rep_Unit.query.filter(Rep_Unit.rep_unit_name == repunit).one().rep_unit_id
+    # day_id = Schedule_day.query.filter(Schedule_day.day_id == daysofweek).one().day_of_week
+    
     exercise.weight_unit_id = weight_unit_id
     exercise.repetition_unit = repetition_unit
     exercise.weight = weights
     exercise.set_number = numberofsets
     exercise.rep_number = reps
 
-    workout_created = Workout.query.get(session['workout_id'])
-    # workout_created.weight_unit_id = weight_unit_id
-    # workout_created.repetition_unit = repetition_unit
-    # workout_created.weight = weights
-    # workout_created.set_number = numberofsets
-    # workout_created.rep_number = reps
-    workout_created.scheduled_at = daysofweek
+    day = Schedule_day.query.get(daysofweek)
+    
 
-    # new_workout = Workout(weight_unit_id=weight_unit_id, repetition_unit=repetition_unit,
-    #                         weight=weights, set_number=numberofsets, rep_number=reps,
-    #                         )
+    workout_created = Workout.query.get(session['workout_id'])
+    workout_created.scheduled_at_days.append(day)
+
+ 
     workout_created.exercises.append(exercise)
     db.session.add(workout_created)
     db.session.commit()
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
+    for workout in workout_schedule:
+        # print(workout)
+        
+            
+        mon_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 1)).all()
+        tues_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 2)).all()
+        wed_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 3)).all()
+        thur_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 4)).all()
+        fri_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 5)).all()
+        sat_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 6)).all()
+        sun_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 7)).all()
 
-    return render_template("workout_schedule.html", workout_schedule=workout_schedule)
+        day_workout = {
+                        'Monday': mon_work, 
+                        'Tuesday':tues_work, 
+                        'Wednesday':wed_work,
+                        'Thursday':thur_work,
+                        'Friday':fri_work,
+                        'Saturday':sat_work,
+                        'Sunday':sun_work
+                         }
+
+    print(day_workout)
+
+            
+   
+
+
+
+    return render_template("workout_schedule.html", day_workout=day_workout, workout_schedule=workout_schedule)
     #all workout under this user
 
 if __name__ == "__main__":
