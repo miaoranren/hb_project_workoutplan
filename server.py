@@ -3,8 +3,8 @@ from jinja2 import StrictUndefined
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout, Schedule_day
-# from helper import get_equipment_code
+from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout, Schedule_Day
+from helper import fill_day_work_dictionary
 
 app = Flask(__name__)
 
@@ -17,7 +17,6 @@ app.jinja_env.undefined = StrictUndefined
 
 @app.route('/register', methods=['GET'])
 def register_form():
-
     return render_template("register.html")
 
 @app.route('/register', methods=['POST'])
@@ -44,7 +43,6 @@ def login_process():
     password = request.form["password"]
 
     user = User.query.filter_by(username=username).first()
-
     if not user:
         flash("No such user.")
         return redirect("/register")
@@ -54,18 +52,17 @@ def login_process():
         return redirect("/login")
 
     session['user_id'] = user.user_id
-    workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
 
-    # print(session['user_id'])
-    # print(workout_schedule)
+    workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
+    day_workout_dict = fill_day_work_dictionary(workout_schedule)
 
     flash("Logged In")
-    return render_template("workout_schedule.html", workout_schedule=workout_schedule, user=user)
-    #list
+    # list
+    return render_template("workout_schedule.html", day_workout=day_workout_dict, workout_schedule=workout_schedule, user=user)
 
 @app.route('/logout')
 def logout():
-    del session["user_id"] 
+    del session["user_id"]
     flash("Logged Out.")
     return redirect('/')
 
@@ -75,9 +72,22 @@ def add_workout():
     db.session.add(new_workout)
     db.session.commit()
     session['workout_id'] = new_workout.workout_id
-    print(new_workout.workout_id)
-    return render_template("Searchpage.html")
+    return render_template("choose_day.html")
 
+@app.route('/choose_training_day', methods=['POST'])
+def choose_training_day():
+    workout_created = Workout.query.get(session['workout_id'])
+    daysofweek_input_list_str = request.form.getlist("daysofweek")
+
+    daysofweek_input_list_int = list(map(int, daysofweek_input_list_str))
+    session['day_id'] = daysofweek_input_list_int
+    
+    day_id_list = []
+    for daysofweek in daysofweek_input_list_int:
+        day = Schedule_Day.query.get(daysofweek) # using the day id to get day object
+        workout_created.scheduled_at_days.append(day)
+    db.session.commit()
+    return render_template("Searchpage.html")
 
 @app.route('/', methods=['POST'])    
 
@@ -93,28 +103,31 @@ def search():
     category_inputs = request.args.getlist("category")
     exercises_2 = []
     for category_input in category_inputs:
-        print('input', category_input)
         category_id = Category.query.filter(Category.category_name == category_input).one().category_id
         exercises_2 += Exercise.query.filter(Exercise.category_id == category_id).all()
 
-    exercises_2 = list(set(exercises_2))
+    exercises_2 = list(set(exercises_2)) # remove duplication
 
-    exercises = list(set(exercises_1) & set(exercises_2))
+    exercises = []
+    if exercises_1 and exercises_2:
+        exercises = list(set(exercises_1) & set(exercises_2))
+    elif exercises_1:
+        exercises = exercises_1
+    elif exercises_2:
+        exercises = exercises_2
+
     session['equipment'] = equipment_inputs
     session['category'] = category_inputs
-
     return render_template("exercise_results.html", exercises=exercises)
 
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
-
     exercise = Exercise.query.get(exercise_id)
     return render_template("add_detail.html", exercise=exercise)
 
 @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
 def addexercises(exercise_id):
     exercise = Exercise.query.get(exercise_id)
-    daysofweek = request.form.get("daysofweek") #later
     numberofsets = request.form.get("numberofsets")
     reps = request.form.get("reps")
     repunit = request.form.get("repunit")
@@ -123,56 +136,21 @@ def addexercises(exercise_id):
 
     weight_unit_id = Weight_Unit.query.filter(Weight_Unit.weight_unit_name == weightunit).one().weight_unit_id
     repetition_unit = Rep_Unit.query.filter(Rep_Unit.rep_unit_name == repunit).one().rep_unit_id
-    # day_id = Schedule_day.query.filter(Schedule_day.day_id == daysofweek).one().day_of_week
-    
+
     exercise.weight_unit_id = weight_unit_id
     exercise.repetition_unit = repetition_unit
     exercise.weight = weights
     exercise.set_number = numberofsets
     exercise.rep_number = reps
 
-    day = Schedule_day.query.get(daysofweek)
-    
-
-    workout_created = Workout.query.get(session['workout_id'])
-    workout_created.scheduled_at_days.append(day)
-
- 
-    workout_created.exercises.append(exercise)
-    db.session.add(workout_created)
+    workout_created_before = Workout.query.get(session['workout_id'])
+    workout_created_before.exercises.append(exercise)
     db.session.commit()
+
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-    for workout in workout_schedule:
-        # print(workout)
-        
-            
-        mon_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 1)).all()
-        tues_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 2)).all()
-        wed_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 3)).all()
-        thur_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 4)).all()
-        fri_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 5)).all()
-        sat_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 6)).all()
-        sun_work = Workout.query.filter(Workout.scheduled_at_days.any(Schedule_day.day_id == 7)).all()
-
-        day_workout = {
-                        'Monday': mon_work, 
-                        'Tuesday':tues_work, 
-                        'Wednesday':wed_work,
-                        'Thursday':thur_work,
-                        'Friday':fri_work,
-                        'Saturday':sat_work,
-                        'Sunday':sun_work
-                         }
-
-    print(day_workout)
-
-            
-   
-
-
-
-    return render_template("workout_schedule.html", day_workout=day_workout, workout_schedule=workout_schedule)
-    #all workout under this user
+    day_workout_dict = fill_day_work_dictionary(workout_schedule)
+    # print(day_workout_dict)
+    return render_template("workout_schedule.html", day_workout=day_workout_dict, workout_schedule=workout_schedule)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

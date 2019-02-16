@@ -2,7 +2,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 class Category(db.Model):
     __tablename__ = 'categories'
 
@@ -18,13 +17,10 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=True)
     username = db.Column(db.String(64), nullable=True)
     password = db.Column(db.String(64), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(16), nullable=True)
-
-    # workouts = db.relationship("Workout")
 
     def __repr__(self):
         return f"<User {self.username} - Workout {self.workout_id}>"   
@@ -48,8 +44,6 @@ class Exercise(db.Model):
     equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
     weight_unit = db.relationship("Weight_Unit")
     rep_unit = db.relationship("Rep_Unit")
-
-    # categories = db.relationship("Category")
 
     def __repr__(self):
         return f"<{self.name} - {self.category_id} - {self.equipment}>"
@@ -81,7 +75,7 @@ class ExerciseEquipment(db.Model):
     equipment_id = db.Column(db.Integer, db.ForeignKey("equipments.equipment_id"), nullable=False)
 
     def __repr__(self):
-        return f"<{self.exercise_id}> -- <{self.equipment_id}>"
+        return f"<{self.exercise_id}> - <{self.equipment_id}>"
 
 class Workout(db.Model):
     __tablename__ = "workouts"
@@ -89,15 +83,12 @@ class Workout(db.Model):
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
 
-    # scheduled_at = db.Column(db.Integer, nullable=True)
-
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
     users = db.relationship('User', backref="workouts")
-    scheduled_at_days = db.relationship('Schedule_day', secondary='scheduledday_workout', backref='workouts')
-
+    scheduled_at_days = db.relationship('Schedule_Day', secondary='scheduledday_workout', backref='workouts')
 
     def __repr__(self):
-        return f"<{self.workout_id} - {self.user_id}>"
+        return f"<Workout id: {self.workout_id} - User id: {self.user_id} - scheduled_at_days: {self.scheduled_at_days} - exercises: {self.exercises}>"
 
 class WorkoutExercise(db.Model):
     __tablename__ = 'workout_exercise'
@@ -116,7 +107,7 @@ class Weight_Unit(db.Model):
     weight_unit_name = db.Column(db.String(128))
 
     def __repr__(self):
-        return f"<{self.weight_unit_id} -- {self.weight_unit_name}>"
+        return f"<{self.weight_unit_id} - {self.weight_unit_name}>"
 
 class Rep_Unit(db.Model):
     __tablename__ = "rep_unit"
@@ -125,33 +116,28 @@ class Rep_Unit(db.Model):
     rep_unit_name = db.Column(db.String(128))
 
     def __repr__(self):
-        return f"<{self.rep_unit_id} -- {self.rep_unit_name}>"
+        return f"<{self.rep_unit_id} - {self.rep_unit_name}>"
 
-class Schedule_day(db.Model):
-
+class Schedule_Day(db.Model):
     __tablename__ = "scheduled_at_days"
 
     day_id = db.Column(db.Integer, primary_key=True)
     day_of_week = db.Column(db.String(64))
 
-
     def __repr__(self):
-        return f"<{self.day_id} -- {self.day_of_week}>"
+        return f"<{self.day_id} - {self.day_of_week}>"
 
 class ScheduleWorkout(db.Model):
-
     __tablename__ = "scheduledday_workout"
     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     day_id = db.Column(db.Integer, db.ForeignKey("scheduled_at_days.day_id"), nullable=False)
     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
 
     def __repr__(self):
-        return f"<{self.day_id} -- {self.workout_id}>"
-
+        return f"<{self.day_id} - {self.workout_id}>"
 
 #####################################################################
 # Helper functions
-
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
@@ -160,7 +146,6 @@ def connect_to_db(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.app = app
     db.init_app(app)
-
 
 if __name__ == "__main__":
     # As a convenience, if we run this module interactively, it will

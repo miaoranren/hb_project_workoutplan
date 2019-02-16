@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Add a training day: </h1>
+
+<form action='/choose_training_day' method="POST">
+
+    
+    
+        <label>Select day:</label>
+        
+            
+            <input type="checkbox" name="daysofweek" value="1">Monday
+            <input type="checkbox" name="daysofweek" value="2">Tuesday
+            <input type="checkbox" name="daysofweek" value="3">Wednesday
+            <input type="checkbox" name="daysofweek" value="4">Thursday
+            <input type="checkbox" name="daysofweek" value="5">Friday
+            <input type="checkbox" name="daysofweek" value="6">Saturday
+            <input type="checkbox" name="daysofweek" value="7">Sunday
+
+         
+        <div>
+        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+    </div>
+</form>
+
+{% endblock %}

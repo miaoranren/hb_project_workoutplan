@@ -46,6 +46,40 @@ def get_category_code(endpoint, category_input):
             category[category_name] = code
     return category[category_input]
 
+def fill_day_work_dictionary(workout_list):
+    day_workout_dict = {
+                            'Monday': [], 
+                            'Tuesday': [], 
+                            'Wednesday': [],
+                            'Thursday': [],
+                            'Friday': [],
+                            'Saturday': [],
+                            'Sunday': [],
+                        }
+
+    for workout in workout_list:
+        # get workout day id, append to the corresponding list in day_workout_dict
+        for day in workout.scheduled_at_days:
+            print(day.day_id)
+
+            if day.day_id == 1:
+                day_workout_dict['Monday'].append(workout)
+            elif day.day_id == 2:
+                day_workout_dict['Tuesday'].append(workout)
+            elif day.day_id == 3:
+                day_workout_dict['Wednesday'].append(workout)
+            elif day.day_id == 4:
+                day_workout_dict['Thursday'].append(workout)
+            elif day.day_id == 5:
+                day_workout_dict['Friday'].append(workout)
+            elif day.day_id == 6:
+                day_workout_dict['Saturday'].append(workout)
+            elif day.day_id == 7:
+                day_workout_dict['Sunday'].append(workout)
+
+    return day_workout_dict
+
+
 # def get_code(equipment_input):
 #     equipment[]
 # print(get_equipment_code("equipment", "Swiss Ball"))

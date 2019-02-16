@@ -1,4 +1,4 @@
-from model import Category, Exercise, Image, Workout, Equipment, ExerciseEquipment, WorkoutExercise, User, Rep_Unit, Weight_Unit, Schedule_day, connect_to_db, db
+from model import Category, Exercise, Image, Workout, Equipment, ExerciseEquipment, WorkoutExercise, User, Rep_Unit, Weight_Unit, Schedule_Day, connect_to_db, db
 from server import app
 from helper import call_api, detect_en
 
@@ -20,6 +20,10 @@ def load_exercise():
         equipment_code_list = result_dict['equipment']
         if not equipment_code_list:
             equipment_code_list = [7]
+
+        # filter out exercises without a name
+        if not name:
+            continue
 
         exercise = Exercise(exercise_id=exercise_id,
                             name=name,
@@ -55,13 +59,9 @@ def load_image(valid_exercises_id_list):
 
 def load_equipment():
     equipment_result_list = call_api('equipment')
-
-
     for result_dict in equipment_result_list:
-        # print(result_dict)
         equipment_id = result_dict['id']
         equipment_name = result_dict['name']
-
     
         equipment = Equipment(equipment_id=equipment_id, 
                             equipment_name=equipment_name)
@@ -71,9 +71,7 @@ def load_equipment():
 
 def load_category():
     category_result_list = call_api('exercisecategory')
-
     for result_dict in category_result_list:
-
         category_id = result_dict['id']
         category_name = result_dict['name']
 
@@ -86,7 +84,6 @@ def load_category():
 def load_rep_unit():
     rep_unit_result_list = call_api("setting-repetitionunit")
     for result_dict in rep_unit_result_list:
-
         rep_unit_id = result_dict['id']
         rep_unit_name = result_dict['name']
 
@@ -94,34 +91,29 @@ def load_rep_unit():
                             rep_unit_name=rep_unit_name)
         db.session.add(rep_unit)
     db.session.commit()
+
 def load_weight_unit():
     weight_unit_result_list = call_api("setting-weightunit")
 
     for result_dict in weight_unit_result_list:
-
         weight_unit_id = result_dict['id']
         weight_unit_name = result_dict['name']
 
         weight_unit = Weight_Unit(weight_unit_id=weight_unit_id,
                                 weight_unit_name=weight_unit_name)
-
         db.session.add(weight_unit)
     db.session.commit()
 
 def load_days_of_week():
     days_of_week_result_list = call_api("daysofweek")
-
     for result_dict in days_of_week_result_list:
-
         day_id = result_dict['id']
         day_of_week = result_dict['day_of_week']
 
-        day_of_week = Schedule_day(day_id=day_id, day_of_week=day_of_week)
+        day_of_week = Schedule_Day(day_id=day_id, day_of_week=day_of_week)
 
         db.session.add(day_of_week)
     db.session.commit()
-
-
 
 if __name__ == "__main__":
     connect_to_db(app)
@@ -140,7 +132,6 @@ if __name__ == "__main__":
     load_image(valid_exercises_id_list)
     load_days_of_week()
     
-
     # workout_1 = Workout(workout_id=1, priority=1, scheduled_at=1)
     # db.session.add(workout_1)
     # db.session.commit()

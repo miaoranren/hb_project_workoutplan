@@ -1,43 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>Workout Schedule</h1>
-    Monday:
-    
-    {% for workout in day_workout['Monday'] %}
-        <li>
-        {% for exercise in workout.exercises %}
-        
-        {{ exercise.name }}
-        {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}}
-        <div>
-        {% for image in exercise.images %}
-        <img src={{ image.image_link }} height="42" width="42">
-        {% endfor %}
-        </div>
-        </li>
-        
-
-        {% endfor %}
-    
-    {% endfor %}
-     <br>  
-        Wednesday:
-    {% for workout in day_workout['Wednesday'] %}
-        
-        {% for exercise in workout.exercises %}
-        <li>
-        {{ exercise.name }}
-        {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}}
-        <div>
-        {% for image in exercise.images %}
-        <img src={{ image.image_link }} height="42" width="42">
-        {% endfor %}
-        </div>
-        </li>
-        
-
-        {% endfor %}
-    
+    <h1>Workout Schedule</h1>
+    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+        {% if day_workout[day] %}
+            <h3>{{ day }}</h3>
+            {% for workout in day_workout[day] %}
+                {% for exercise in workout.exercises %}
+                <li>
+                    {{ exercise.name }}
+                    {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}}
+                </li>
+                <div>
+                    {% for image in exercise.images %}
+                    <img src={{ image.image_link }} height="42" width="42">
+                    {% endfor %}
+                </div>
+                <br>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
     {% endfor %}
 
 <form action="/create_workout" method="POST">
