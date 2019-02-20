@@ -8,14 +8,14 @@
   <div>
     <label>
       Username
-      <input type="username" name="username">
+      <input type="username" name="username" placeholder="Enter Username" required>
     </label>
   </div>
 
   <div>
     <label>
       Password
-      <input type="password" name="password">
+      <input type="password" name="password" placeholder="Enter Password" required>
     </label>
   </div>
 
@@ -29,12 +29,17 @@
   <div>
     <label>
       Gender
-      <input type="text" name="gender">
+      <select name="gender">
+        <option value="female"> Female </option>
+        <option value="male"> Male </option>
+      </select>
     </label>
   </div>
 
   <div>
+    <button type="button"> Cancel </button>
     <input type="submit" value="Register">
+
   </div>
 
 </form>

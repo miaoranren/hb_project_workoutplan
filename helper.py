@@ -2,6 +2,7 @@ import requests
 
 # pip install langdetect
 from langdetect import detect
+from datetime import datetime, timedelta
 
 equipment = {}
 category = {}
@@ -11,6 +12,7 @@ def call_api(endpoint):
     api_url = f'{base_url}/{endpoint}?limit=1000'
     r = requests.get(api_url)
     results = r.json()
+    
     return results['results']
 
 def detect_en(in_str):
@@ -46,38 +48,25 @@ def get_category_code(endpoint, category_input):
             category[category_name] = code
     return category[category_input]
 
-def fill_day_work_dictionary(workout_list):
-    day_workout_dict = {
-                            'Monday': [], 
-                            'Tuesday': [], 
-                            'Wednesday': [],
-                            'Thursday': [],
-                            'Friday': [],
-                            'Saturday': [],
-                            'Sunday': [],
-                        }
+def fill_day_work_list(workout_list):
+    day_workout_list = {}
+
+    # construct days in this week
+    days_in_current_week = []
+    dt = datetime.today()
+    start_day_of_week_monday = dt - timedelta(days=dt.weekday())
+    for day_diff in range(7):
+        curr_day = start_day_of_week_monday + timedelta(days=day_diff)
+        days_in_current_week.append(curr_day.strftime('%Y-%m-%d'))
+
+    for day in days_in_current_week:
+        day_workout_list[day] = []
 
     for workout in workout_list:
-        # get workout day id, append to the corresponding list in day_workout_dict
-        for day in workout.scheduled_at_days:
-            print(day.day_id)
-
-            if day.day_id == 1:
-                day_workout_dict['Monday'].append(workout)
-            elif day.day_id == 2:
-                day_workout_dict['Tuesday'].append(workout)
-            elif day.day_id == 3:
-                day_workout_dict['Wednesday'].append(workout)
-            elif day.day_id == 4:
-                day_workout_dict['Thursday'].append(workout)
-            elif day.day_id == 5:
-                day_workout_dict['Friday'].append(workout)
-            elif day.day_id == 6:
-                day_workout_dict['Saturday'].append(workout)
-            elif day.day_id == 7:
-                day_workout_dict['Sunday'].append(workout)
-
-    return day_workout_dict
+        for day in days_in_current_week:
+            if workout.scheduled_at == day:
+                day_workout_list[day].append(workout)
+    return day_workout_list
 
 
 # def get_code(equipment_input):

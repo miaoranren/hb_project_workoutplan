@@ -1,27 +1,103 @@
 {% extends 'base.html' %}
 {% block content %}
-    <h1>Workout Schedule</h1>
-    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
-        {% if day_workout[day] %}
-            <h3>{{ day }}</h3>
-            {% for workout in day_workout[day] %}
-                {% for exercise in workout.exercises %}
-                <li>
-                    {{ exercise.name }}
-                    {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}}
-                </li>
-                <div>
-                    {% for image in exercise.images %}
-                    <img src={{ image.image_link }} height="42" width="42">
-                    {% endfor %}
-                </div>
-                <br>
-                {% endfor %}
-            {% endfor %}
-        {% endif %}
-    {% endfor %}
 
-<form action="/create_workout" method="POST">
+<script>import $ from 'jquery';</script>
+<script>import 'fullcalendar';</script>
+<form id="createworkoutform" action="/create_workout" method="POST">
     <input type="submit" value="Create your workout">
 </form>
+
+    <h1>Workout Schedule</h1>
+    {% for (day, workouts) in day_workout_list.items() %}
+        <h3>{{ day }}</h3>
+            {% if not workouts %}
+                rest day
+            {% else %}
+                {% for workout in workouts %}
+                    {% for exercise in workout.exercises %}
+                        <li>
+                            {{ exercise.name }} 
+                            <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST">
+                                <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}">
+                                <input type="submit" value="Delete">
+                            </form>
+                            <form action='/updateexercises/{{exercise.exercise_id}}'>
+                                <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}">
+                                <input type="submit" value="Update">
+                            </form>
+                            
+                            {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
+                            <br>
+                            <br>
+                            Description: {{exercise.description}}
+                            <br>
+                            <br>
+                            Equipments:
+                            {% for equipment in exercise.equipments %}
+                                {{equipment.equipment_name}}
+                            {% endfor %}
+                        </li>
+                        <div>
+                            {% for image in exercise.images %}
+                            <img src={{ image.image_link }} height="42" width="42">
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+        <br>
+    {% endfor %}
+<!--     <div id='calendar'></div> -->
+    <script>
+        $(document).ready(function() {
+        let events = [];
+        // let events_dict = []
+        {% for workout in workout_schedule %}
+            event={};
+  
+            event.title = '{{workout.workout_id}}'
+            event.start = '{{workout.scheduled_at}}'
+           
+      
+        events.push(event)
+        {% endfor %}
+        // events.push(event)
+        console.log(events)
+
+      // $(document).ready(function() {
+
+        $('#calendar').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,basicWeek,basicDay'
+          },
+          defaultDate: '2019-01-12',
+          navLinks: true, // can click day/week names to navigate views
+          editable: true,
+          eventLimit: true, // allow "more" link when too many events
+          // eventRender: function(event, $el) {
+          //   $el.popover({
+          //       title:event.title,
+          //       content: event.title,
+          //       trigger:'hover',
+          //       placement:'top',
+          //       container:'body'
+          //   });
+          // },
+          events: events
+
+
+           
+          
+        });
+
+      });
+
+</script>
+<div id='calendar'></div>
+
+
+
+
 {% endblock %}

@@ -4,23 +4,11 @@
 <h1>Add a training day: </h1>
 
 <form action='/choose_training_day' method="POST">
+     <label for="start">Start date:</label>
 
-    
-    
-        <label>Select day:</label>
-        
-            
-            <input type="checkbox" name="daysofweek" value="1">Monday
-            <input type="checkbox" name="daysofweek" value="2">Tuesday
-            <input type="checkbox" name="daysofweek" value="3">Wednesday
-            <input type="checkbox" name="daysofweek" value="4">Thursday
-            <input type="checkbox" name="daysofweek" value="5">Friday
-            <input type="checkbox" name="daysofweek" value="6">Saturday
-            <input type="checkbox" name="daysofweek" value="7">Sunday
+    <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
 
-         
-        <div>
-        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+<input type="submit" name="submit">
     </div>
 </form>
 

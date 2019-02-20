@@ -1,10 +1,12 @@
 from jinja2 import StrictUndefined
 
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, render_template, request, flash, redirect, session, jsonify, g
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout, Schedule_Day
-from helper import fill_day_work_dictionary
+from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout
+from helper import fill_day_work_list
+
+
 
 app = Flask(__name__)
 
@@ -33,7 +35,7 @@ def register_process():
     flash(f"User {username} added.")
     return redirect('/')
 
-@app.route('/login', methods=['GET'])
+@app.route('/login/', methods=['GET'])
 def login_form():
     return render_template("login.html")
 
@@ -53,12 +55,13 @@ def login_process():
 
     session['user_id'] = user.user_id
 
+
     workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
-    day_workout_dict = fill_day_work_dictionary(workout_schedule)
+    day_workout_list = fill_day_work_list(workout_schedule)
 
     flash("Logged In")
     # list
-    return render_template("workout_schedule.html", day_workout=day_workout_dict, workout_schedule=workout_schedule, user=user)
+    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, user=user)
 
 @app.route('/logout')
 def logout():
@@ -76,22 +79,26 @@ def add_workout():
 
 @app.route('/choose_training_day', methods=['POST'])
 def choose_training_day():
-    workout_created = Workout.query.get(session['workout_id'])
-    daysofweek_input_list_str = request.form.getlist("daysofweek")
 
-    daysofweek_input_list_int = list(map(int, daysofweek_input_list_str))
-    session['day_id'] = daysofweek_input_list_int
+    workout_created = Workout.query.get(session['workout_id'])
+    daysofweek_input_str = request.form.get("workout-date")
+
+    # daysofweek_input_list_int = list(map(int, daysofweek_input_list_str))
+    session['day_id'] = daysofweek_input_str
     
-    day_id_list = []
-    for daysofweek in daysofweek_input_list_int:
-        day = Schedule_Day.query.get(daysofweek) # using the day id to get day object
-        workout_created.scheduled_at_days.append(day)
+    # day_id_list = []
+    # for daysofweek in daysofweek_input_list_int:
+        # day = Schedule_Day.query.get(daysofweek) # using the day id to get day object
+    print(daysofweek_input_str)
+    workout_created.scheduled_at = daysofweek_input_str
+    print(workout_created.scheduled_at)
     db.session.commit()
     return render_template("Searchpage.html")
 
+
 @app.route('/', methods=['POST'])    
 
-@app.route('/search', methods=['GET']) 
+@app.route('/search', methods=['GET'])
 def search():
     equipment_inputs = request.args.getlist("equipment")
     exercises_1 = []
@@ -115,9 +122,13 @@ def search():
         exercises = exercises_1
     elif exercises_2:
         exercises = exercises_2
+    
+    if not exercises: #popup window
+        return render_template("Searchpage.html")
 
-    session['equipment'] = equipment_inputs
-    session['category'] = category_inputs
+    # session['equipment'] = equipment_inputs
+    # session['category'] = category_inputs
+
     return render_template("exercise_results.html", exercises=exercises)
 
 @app.route('/search/<int:exercise_id>')
@@ -148,9 +159,33 @@ def addexercises(exercise_id):
     db.session.commit()
 
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-    day_workout_dict = fill_day_work_dictionary(workout_schedule)
+    day_workout_list = fill_day_work_list(workout_schedule)
     # print(day_workout_dict)
-    return render_template("workout_schedule.html", day_workout=day_workout_dict, workout_schedule=workout_schedule)
+    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+
+@app.route('/deleteexercises/<int:exercise_id>', methods=['POST'])
+def delete_exercise(exercise_id):
+    if session["user_id"]:
+        exercise_to_delete = Exercise.query.get(exercise_id)
+        # print(exercise_to_delete)
+    workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
+    day_workout_list = fill_day_work_list(workout_schedule)
+    db.session.delete(exercise_to_delete)
+    db.session.commit()
+
+    for workout in workout_schedule:
+        if not workout.exercises:
+            db.session.delete(workout)
+            db.session.commit()
+   
+    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+
+@app.route('/updateexercises/<int:exercise_id>')
+def update_details(exercise_id):
+    if session['user_id']:
+        exercise_to_update = Exercise.query.get(exercise_id)
+    exercise = Exercise.query.get(exercise_id)
+    return render_template("add_detail.html", exercise=exercise)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

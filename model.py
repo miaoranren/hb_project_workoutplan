@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy 
 
+
+
 db = SQLAlchemy()
 
 class Category(db.Model):
@@ -82,13 +84,20 @@ class Workout(db.Model):
 
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
+    scheduled_at = db.Column(db.String(10))
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
     users = db.relationship('User', backref="workouts")
-    scheduled_at_days = db.relationship('Schedule_Day', secondary='scheduledday_workout', backref='workouts')
+    # scheduled_at_days = db.relationship('Schedule_Day', secondary='scheduledday_workout', backref='workouts')
 
     def __repr__(self):
-        return f"<Workout id: {self.workout_id} - User id: {self.user_id} - scheduled_at_days: {self.scheduled_at_days} - exercises: {self.exercises}>"
+        return f"<Workout id: {self.workout_id} - User id: {self.user_id} - scheduled_at: {self.scheduled_at} - exercises: {self.exercises}>"
+
+    def serialize(self):
+        return {
+                'workout_id' :self.workout_id,
+                'scheduled_at': self.scheduled_at
+        }
 
 class WorkoutExercise(db.Model):
     __tablename__ = 'workout_exercise'
@@ -118,23 +127,23 @@ class Rep_Unit(db.Model):
     def __repr__(self):
         return f"<{self.rep_unit_id} - {self.rep_unit_name}>"
 
-class Schedule_Day(db.Model):
-    __tablename__ = "scheduled_at_days"
+# class Schedule_Day(db.Model):
+#     __tablename__ = "scheduled_at_days"
 
-    day_id = db.Column(db.Integer, primary_key=True)
-    day_of_week = db.Column(db.String(64))
+#     day_id = db.Column(db.Integer, primary_key=True)
+#     day_of_week = db.Column(db.String(64))
 
-    def __repr__(self):
-        return f"<{self.day_id} - {self.day_of_week}>"
+#     def __repr__(self):
+#         return f"<{self.day_id} - {self.day_of_week}>"
 
-class ScheduleWorkout(db.Model):
-    __tablename__ = "scheduledday_workout"
-    table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    day_id = db.Column(db.Integer, db.ForeignKey("scheduled_at_days.day_id"), nullable=False)
-    workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
+# class ScheduleWorkout(db.Model):
+#     __tablename__ = "scheduledday_workout"
+#     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     day_id = db.Column(db.Integer, db.ForeignKey("scheduled_at_days.day_id"), nullable=False)
+#     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
 
-    def __repr__(self):
-        return f"<{self.day_id} - {self.workout_id}>"
+#     def __repr__(self):
+#         return f"<{self.day_id} - {self.workout_id}>"
 
 #####################################################################
 # Helper functions

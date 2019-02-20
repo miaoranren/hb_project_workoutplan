@@ -2,7 +2,7 @@
 {% block content %}
 
   <h1>WorkoutSearch</h1>
-  <form action="/search" method="GET">
+  <form id="exercise=form" action="/search" method="GET">
     <h2>Equipment:</h2>
     <input type="checkbox" name="equipment" value="Barbell">Barbell
     <input type="checkbox" name="equipment" value="Bench">Bench
@@ -25,21 +25,11 @@
     <input type="checkbox" name="category" value="Shoulders">Shoulders
 
     <div>
-    <input type="submit" name="submit">
+    <input type="submit" name="submit" onclick="Warn()">
     </div>
   </form>
 
- <!--  <h2>Targeted Body Parts:</h2>
-  <form action="/search" method="POST">
-    <input type="checkbox" name="category" value="Abs">Abs
-    <input type="checkbox" name="category" value="Arms">Arms
-    <input type="checkbox" name="category" value="Back">Back
-    <input type="checkbox" name="category" value="Calves">Calves
-    <input type="checkbox" name="category" value="Chest">Chest
-    <input type="checkbox" name="category" value="Legs">Legs
-    <input type="checkbox" name="category" value="Shoulders">Shoulders
-   <input type="submit">
-  </form>
- -->
+ <script src="/static/js/exercise.js"></script>
+
 
 {% endblock %}

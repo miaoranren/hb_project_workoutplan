@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <h1>Results:</h1>
 <ul>
+
     {% for exercise in exercises %}
-    
-        
-            
-        
-        <li><a href= "/search/{{exercise.exercise_id}}">{{ exercise.name }}</li>
-            
-        
-   
+        <li id="exercise_results"><a href= "/search/{{exercise.exercise_id}}">{{ exercise.name }}</li>
     {% endfor %}
+    
+
+
 </ul>
 {% endblock %}
