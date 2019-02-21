@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<script>import $ from 'jquery';</script>
-<script>import 'fullcalendar';</script>
 <form id="createworkoutform" action="/create_workout" method="POST">
     <input type="submit" value="Create your workout">
 </form>
@@ -48,56 +46,41 @@
         <br>
     {% endfor %}
 <!--     <div id='calendar'></div> -->
-    <script>
-        $(document).ready(function() {
-        let events = [];
-        // let events_dict = []
-        {% for workout in workout_schedule %}
-            event={};
-  
-            event.title = '{{workout.workout_id}}'
-            event.start = '{{workout.scheduled_at}}'
-           
-      
-        events.push(event)
-        {% endfor %}
-        // events.push(event)
-        console.log(events)
+<script>
+  $(document).ready(function() {
+    let events = [];
+    {% for workout in workout_schedule %}
+    event={};
+    event.title = '{{workout.workout_id}}'
+    event.start = '{{workout.scheduled_at}}'
+    events.push(event)
+    {% endfor %}
+    console.log(events)
+    $('#calendar').fullCalendar({
+      header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,basicWeek,basicDay'
+    },
 
-      // $(document).ready(function() {
-
-        $('#calendar').fullCalendar({
-          header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,basicWeek,basicDay'
-          },
-          defaultDate: '2019-01-12',
-          navLinks: true, // can click day/week names to navigate views
-          editable: true,
-          eventLimit: true, // allow "more" link when too many events
-          // eventRender: function(event, $el) {
-          //   $el.popover({
-          //       title:event.title,
-          //       content: event.title,
-          //       trigger:'hover',
-          //       placement:'top',
-          //       container:'body'
-          //   });
-          // },
-          events: events
-
-
-           
-          
-        });
-
-      });
-
+    defaultDate: '2019-01-12',
+    navLinks: true, // can click day/week names to navigate views
+    editable: true,
+    eventLimit: true, // allow "more" link when too many events
+        // eventRender: function(event, $el) {
+        //   $el.popover({
+        //       title:event.title,
+        //       content: event.title,
+        //       trigger:'hover',
+        //       placement:'top',
+        //       container:'body'
+        //   });
+        // },
+    events: events
+  });
+  });
 </script>
+
 <div id='calendar'></div>
-
-
-
 
 {% endblock %}
