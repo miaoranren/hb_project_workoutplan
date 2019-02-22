@@ -99,7 +99,7 @@
     <p>
         <br>
         <label> Select set number</label>
-        <select name="numberofsets">
+        <select name="numberofsets" id="set">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -107,8 +107,8 @@
         </select>
         <br>
         <label> Enter reps for each set</label>
-        <input type="text" name="reps" required>
-        <select name="repunit">
+        <input type="text" name="reps" id="rep" required>
+        <select name="repunit" id="repunit">
             <option value="Kilometers">Kilometers</option>
             <option value="Miles">Miles</option>
             <option value="Minutes">Minutes</option>
@@ -119,8 +119,8 @@
 
         <br>
         <label> Enter weights for each rep</label>
-        <input type="text" name="weights">
-        <select name="weightunit">
+        <input type="text" name="weights" id="weights">
+        <select name="weightunit" id="weightunit">
             <option value="Body Weight">Body Weight</option>
             <option value="kg">kg</option>
             <option value="Kilometers Per Hour">Kilometers Per Hour</option>
@@ -135,6 +135,8 @@
     </div>
 
 </form>
+<div>
+<a href="/dashboard">Done
 </div>
 
 <script>
@@ -168,7 +170,6 @@
     $(function() {
         $('#exercise_result').on('click', function(evt) {
             evt.preventDefault();
-            console.log("i am here.");
 
             const $evt = $(evt.target);
             const id = $evt.data('id');
@@ -177,11 +178,36 @@
 
             $.get('/search/' + id, id);
             // $('.detail-form').attr('action', url);
-            $('.detail-form').css({ display: 'block' });
+            $('.detail-form').toggle();
+        });
+    });
+</script>
+<script>
+    $(function() {
+        $('.detail-form').on('submit', function(evt) {
+            evt.preventDefault();
+
+            const formData = {
+                numberofsets: $('#set').val(),
+                reps: $('#rep').val(),
+                repunit: $('#repunit').val(),
+                weights: $('#weights').val(),
+                weightunit: $('#weightunit').val()
+            };
+            console.log(formData);
+            $.post('/addexercises', formData)
+
         });
     });
 </script>
 
+<script>
+    $(function(){
+        $('.done').on('click',function(){
+            location.href = '/addexercises'
+        });
+    });
+</script>
 <!-- 
  <script type="text/javascript">
      console.log("hi");

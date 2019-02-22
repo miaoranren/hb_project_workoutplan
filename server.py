@@ -88,14 +88,10 @@ def choose_training_day():
 
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
-    print(exercise_id)
     session['exercise_id'] = exercise_id
     return ('', 204)
 
-# @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
-# def addexercises(exercise_id):
-@app.route('/addexercises', methods=['POST'])
-def addexercises():
+def add_exercises_helper():
     exercise_id = session['exercise_id']
     print("in addexercises: ", exercise_id)
     exercise = Exercise.query.get(exercise_id)
@@ -118,9 +114,24 @@ def addexercises():
     workout_created_before.exercises.append(exercise)
     db.session.commit()
 
+# @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
+# def addexercises(exercise_id):
+@app.route('/addexercises', methods=['POST'])
+def addexercises():
+    add_exercises_helper()
+    return ('', 204)
+
+@app.route('/addexercises_and_show_dashboard', methods=['POST'])
+def addexercises_and_show_dashboard():
+    add_exercises_helper()
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
-    print(workout_schedule)
+    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+
+@app.route('/dashboard')
+def dashboard():
+    workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
+    day_workout_list = fill_day_work_list(workout_schedule)
     return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
 
 @app.route('/deleteexercises/<int:exercise_id>', methods=['POST'])

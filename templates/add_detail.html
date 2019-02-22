@@ -3,11 +3,11 @@
 
 <h1>Details: {{ exercise.name }}</h1>
 
-<form action='/addexercises/{{exercise.exercise_id}}' method="POST">
+<form action='/addexercises_and_show_dashboard' method="POST">
     <p>
         <br>
         <label> Select set number</label>
-        <select name="numberofsets">
+        <select name="numberofsets" id="set">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
@@ -15,8 +15,8 @@
         </select>
         <br>
         <label> Enter reps for each set</label>
-        <input type="text" name="reps" required>
-        <select name="repunit">
+        <input type="text" name="reps" id="rep" required>
+        <select name="repunit" id="repunit">
             <option value="Kilometers">Kilometers</option>
             <option value="Miles">Miles</option>
             <option value="Minutes">Minutes</option>
@@ -27,8 +27,8 @@
 
         <br>
         <label> Enter weights for each rep</label>
-        <input type="text" name="weights">
-        <select name="weightunit">
+        <input type="text" name="weights" id="weights">
+        <select name="weightunit" id="weightunit">
             <option value="Body Weight">Body Weight</option>
             <option value="kg">kg</option>
             <option value="Kilometers Per Hour">Kilometers Per Hour</option>
