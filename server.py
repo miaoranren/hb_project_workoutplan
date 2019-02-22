@@ -6,8 +6,6 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout
 from helper import fill_day_work_list
 
-
-
 app = Flask(__name__)
 
 # Required to use Flask sessions and the debug toolbar
@@ -55,12 +53,10 @@ def login_process():
 
     session['user_id'] = user.user_id
 
-
     workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
     day_workout_list = fill_day_work_list(workout_schedule)
 
     flash("Logged In")
-    # list
     return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, user=user)
 
 @app.route('/logout')
@@ -77,91 +73,31 @@ def add_workout():
     session['workout_id'] = new_workout.workout_id
     return render_template("choose_day.html")
 
-@app.route('/choose_training_day', methods=['POST', 'GET'])
+@app.route('/choose_training_day', methods=['POST'])
 def choose_training_day():
-
     workout_created = Workout.query.get(session['workout_id'])
     daysofweek_input_str = request.form.get("workout-date")
 
-    # daysofweek_input_list_int = list(map(int, daysofweek_input_list_str))
     session['day_id'] = daysofweek_input_str
-    print(daysofweek_input_str)
     workout_created.scheduled_at = daysofweek_input_str
     print(workout_created.scheduled_at)
     db.session.commit()
-
-    equipment_inputs = request.args.getlist("equipment")
-    exercises_1 = []
-    for equipment_input in equipment_inputs:
-        exercises_1 += Exercise.query.filter(Exercise.equipments.any(Equipment.equipment_name == equipment_input)).all()
-
-    exercises_1 = list(set(exercises_1)) # remove duplication
-
-    category_inputs = request.args.getlist("category")
-    exercises_2 = []
-    for category_input in category_inputs:
-        category_id = Category.query.filter(Category.category_name == category_input).one().category_id
-        exercises_2 += Exercise.query.filter(Exercise.category_id == category_id).all()
-
-    exercises_2 = list(set(exercises_2)) # remove duplication
-
-    exercises = []
-    if exercises_1 and exercises_2:
-        exercises = list(set(exercises_1) & set(exercises_2))
-    elif exercises_1:
-        exercises = exercises_1
-    elif exercises_2:
-        exercises = exercises_2
-    
-    if not exercises: #popup window
-        return render_template("Searchpage.html")
-
-
-    return render_template("exercise_results.html", exercises=exercises)
-
+    return ('', 204)
 
 @app.route('/', methods=['POST'])    
 
-# @app.route('/search', methods=['GET'])
-# def search():
-#     equipment_inputs = request.args.getlist("equipment")
-#     exercises_1 = []
-#     for equipment_input in equipment_inputs:
-#         exercises_1 += Exercise.query.filter(Exercise.equipments.any(Equipment.equipment_name == equipment_input)).all()
-
-#     exercises_1 = list(set(exercises_1)) # remove duplication
-
-#     category_inputs = request.args.getlist("category")
-#     exercises_2 = []
-#     for category_input in category_inputs:
-#         category_id = Category.query.filter(Category.category_name == category_input).one().category_id
-#         exercises_2 += Exercise.query.filter(Exercise.category_id == category_id).all()
-
-#     exercises_2 = list(set(exercises_2)) # remove duplication
-
-#     exercises = []
-#     if exercises_1 and exercises_2:
-#         exercises = list(set(exercises_1) & set(exercises_2))
-#     elif exercises_1:
-#         exercises = exercises_1
-#     elif exercises_2:
-#         exercises = exercises_2
-    
-#     if not exercises: #popup window
-#         return render_template("Searchpage.html")
-
-#     # session['equipment'] = equipment_inputs
-#     # session['category'] = category_inputs
-
-#     return render_template("exercise_results.html", exercises=exercises)
-
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
-    exercise = Exercise.query.get(exercise_id)
-    return render_template("add_detail.html", exercise=exercise)
+    print(exercise_id)
+    session['exercise_id'] = exercise_id
+    return ('', 204)
 
-@app.route('/addexercises/<int:exercise_id>', methods=['POST'])
-def addexercises(exercise_id):
+# @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
+# def addexercises(exercise_id):
+@app.route('/addexercises', methods=['POST'])
+def addexercises():
+    exercise_id = session['exercise_id']
+    print("in addexercises: ", exercise_id)
     exercise = Exercise.query.get(exercise_id)
     numberofsets = request.form.get("numberofsets")
     reps = request.form.get("reps")
@@ -211,10 +147,8 @@ def update_details(exercise_id):
     exercise = Exercise.query.get(exercise_id)
     return render_template("add_detail.html", exercise=exercise)
 
-
-@app.route('/choose_training_day.json')
+@app.route('/choose_exercises.json')
 def get_exercises_result():
-
     equipment_inputs = request.args.getlist("equipment")
     exercises_1 = []
     for equipment_input in equipment_inputs:
@@ -237,16 +171,16 @@ def get_exercises_result():
         exercises = exercises_1
     elif exercises_2:
         exercises = exercises_2
-    
-    # if not exercises: #popup window
-    #     return render_template("Searchpage.html")
-    # exercises_list=[]
-    # for exercise_object in exercises:
-    #     exercises_list.append(exercise_object.serialize())
-    exercises_list = [e.serialize() for e in exercises]
 
+    exercises = sorted(exercises, key=lambda x: x.name)
+    exercises_list = [e.serialize() for e in exercises]
     return jsonify(exercises_list)
 
+# @app.route('/search/id.json')
+# def adddetails(exercise_id):
+#     exercise = Exercise.query.get(exercise_id)
+#     exercise_json = exercise.serialize()
+#     return jsonify(exercise_json)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

@@ -4,24 +4,63 @@
 <h1>Add a Training Day</h1>
 
 <form id="day-selection-form" action='/choose_training_day' method="POST">
-     <!-- <label for="start">Start date:</label> -->
-     <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
-     <input type="submit" name="submit">
+    <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
+    <input type="submit" name="submit">
 </form>
 
 <script>
     $(function() {    
         $('#day-selection-form').on('submit', evt => {
             evt.preventDefault();
-            console.log('hi')
+
             const formData = {
-                workout_date: $('#start').val()
+                "workout-date": $('#start').val()
             };
-            console.log(formData)
+            console.log(formData);
+            $.post('/choose_training_day', formData);
+            $('.exercise-form').css({ display: 'block' });
+
+        //     const equipList = ['Barbell', 'Bench', 'Dumbbell', 'Gym mat','Incline bench', 'Kettlebell' , 'none (bodyweight exercise)', 'Pull-up bar', 'Swiss Ball', 'SZ-Bar'];
+        //     const categoryList = ['Abs', 'Arms', 'Back', 'Calves','Chest', 'Legs','Shoulders']
+        //     const $equpInputs = equipList.map((equip) => {
+        //         const $input = $('<input>', { type:'checkbox',
+        //                                     name:'equipment',
+        //                                     value:equip,
+        //                                     class:'equipment_checkboxes',
+        //                                     html:equip
+        //                                 });
+        //         return $equpInputs;
+        //     });
+        //     const $categoryInputs = categoryList.map((category) => {
+        //         const $input = $('<input>', { type:'checkbox',
+        //                                     name:'category',
+        //                                     value:category,
+        //                                     class:'category_checkboxes',
+        //                                     html:category
+        //                                 });
+        //         return $categoryInputs;
+        //     });
+
+        //     const headerInputList = ['Equipment:', 'Category:']
+        //     const $headerInputs = headerInputList.map((header) => {
+        //         const $input = $('<h2>', {
+        //             html:header
+        //         });
+
+        //         return $headerInputs
+        //     });
+
+        //     const $form = $('<form>', {id:'exercise-form',
+        //                                 action:'/choose_training_day',
+        //                                 method:'GET'
+        //                             });
+        //     $form.append($headerInuts)
+        //     $headerInuts.append($equpInputs)
         });
     });
 </script>
 
+<div class="exercise-form">
 <h1>Workout Search</h1>
 <form id="exercise-form" action="/choose_training_day" method="GET">
     <h2>Equipment:</h2>
@@ -50,8 +89,52 @@
     <input id="exercise_submit" type="submit" name="submit">
     </div>
 </form>
+</div>
 
 <div id="exercise_result">
+</div>
+
+<div class="detail-form">
+    <form id="detail-form" action="/addexercises" method="POST">
+    <p>
+        <br>
+        <label> Select set number</label>
+        <select name="numberofsets">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <br>
+        <label> Enter reps for each set</label>
+        <input type="text" name="reps" required>
+        <select name="repunit">
+            <option value="Kilometers">Kilometers</option>
+            <option value="Miles">Miles</option>
+            <option value="Minutes">Minutes</option>
+            <option value="Repetitions">Repetitions</option>
+            <option value="Seconds">Seconds</option>
+            <option value="Until Failure">Until Failure</option>
+        </select>
+
+        <br>
+        <label> Enter weights for each rep</label>
+        <input type="text" name="weights">
+        <select name="weightunit">
+            <option value="Body Weight">Body Weight</option>
+            <option value="kg">kg</option>
+            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+            <option value="lb">lb</option>
+            <option value="Miles Per Hour">Miles Per Hour</option>
+            <option value="Plates">Plates</option>
+        </select>
+
+    </p>
+    <div>
+        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+    </div>
+
+</form>
 </div>
 
 <script>
@@ -65,18 +148,36 @@
             };
             console.log(formData);
              
-            $.get('/choose_training_day.json', formData, (results) => {
+            $.get('/choose_exercises.json', formData, (results) => {
                 const exercise = results;
                 var list_html = "<br>"
                 list_html += "Results:"
                 list_html += "<ul>";
                 for (var i = 0; i < exercise.length; i++) {
                     var obj = exercise[i];
-                    list_html += "<li>" + "<a href=\"/search/" + obj.exercise_id + "\">" + obj.name + "</li>";
+                    list_html += "<li>" + "<a class='detail' data-id=" + obj.exercise_id + ">" + obj.name + "</li>";
                 }
                 list_html += "</ul>"
                 $('#exercise_result').html(list_html);
             });
+        });
+    });
+</script>
+
+<script>
+    $(function() {
+        $('#exercise_result').on('click', function(evt) {
+            evt.preventDefault();
+            console.log("i am here.");
+
+            const $evt = $(evt.target);
+            const id = $evt.data('id');
+            const url = '/addexercises/' + id;
+            console.log("id: ", id);
+
+            $.get('/search/' + id, id);
+            // $('.detail-form').attr('action', url);
+            $('.detail-form').css({ display: 'block' });
         });
     });
 </script>
