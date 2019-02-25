@@ -11,35 +11,39 @@ def load_exercise():
 
         exercise_id = result_dict['id']
         name = result_dict['name']
-        description = result_dict['description']
-        category_code = result_dict['category']
+        if name:
+            # description = result_dict['description']\
+            #     .replace('<p>', '').replace('</p>', '')
+            description = result_dict['description']
+            category_code = result_dict['category']
 
-        # filter out non-English exercises
-        if (language != 2) or not detect_en(description):
-            continue
-        equipment_code_list = result_dict['equipment']
-        if not equipment_code_list:
-            equipment_code_list = [7]
+            # filter out non-English exercises
+            if (language != 2) or not detect_en(description):
+                continue
+            equipment_code_list = result_dict['equipment']
+            if not equipment_code_list:
+                equipment_code_list = [7]
 
-        # filter out exercises without a name
-        if not name:
-            continue
+            # filter out exercises without a name
+            # if not name:
+            #     continue
 
-        exercise = Exercise(exercise_id=exercise_id,
-                            name=name,
-                            description=description,
-                            equipment=equipment_code_list,
-                            category_id=category_code)
+            exercise = Exercise(exercise_id=exercise_id,
+                                name=name,
+                                description=description,
+                                equipment=equipment_code_list,
+                                category_id=category_code)
 
-        db.session.add(exercise)
-        for code in equipment_code_list:
-            if Exercise.query.get(exercise_id):
-                ee_entry = ExerciseEquipment(exercise_id=exercise_id, equipment_id=code)
-                db.session.add(ee_entry)
+            db.session.add(exercise)
+            for code in equipment_code_list:
+                if Exercise.query.get(exercise_id):
+                    ee_entry = ExerciseEquipment(exercise_id=exercise_id, equipment_id=code)
+                    db.session.add(ee_entry)
 
-        db.session.commit()
+            db.session.commit()
 
-        valid_exercises_id_list.append(exercise_id)
+            valid_exercises_id_list.append(exercise_id)
+    # need it?
     db.session.commit()
    
     return valid_exercises_id_list

@@ -4,12 +4,12 @@
 <form id="createworkoutform" action="/create_workout" method="POST">
     <input type="submit" value="Create your workout">
 </form>
-
+<div>
     <h1>Workout Schedule</h1>
     {% for (day, workouts) in day_workout_list.items() %}
         <h3>{{ day }}</h3>
             {% if not workouts %}
-                rest day
+                <span>rest day</span>
             {% else %}
                 {% for workout in workouts %}
                     {% for exercise in workout.exercises %}
@@ -24,16 +24,17 @@
                                 <input type="submit" value="Update">
                             </form>
                             
-                            {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
+                            <div>{{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
                             <br>
                             <br>
-                            Description: {{exercise.description}}
+                            Description: {{exercise.description | safe}}
                             <br>
                             <br>
                             Equipments:
                             {% for equipment in exercise.equipments %}
                                 {{equipment.equipment_name}}
                             {% endfor %}
+                        </div>
                         </li>
                         <div>
                             {% for image in exercise.images %}
@@ -45,6 +46,7 @@
             {% endif %}
         <br>
     {% endfor %}
+</div>
 <!--     <div id='calendar'></div> -->
 <script>
   $(document).ready(function() {
@@ -57,16 +59,17 @@
     {% endfor %}
     console.log(events)
     $('#calendar').fullCalendar({
-      header: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'month,basicWeek,basicDay'
-    },
+        header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,basicWeek,basicDay'
+        },
+        height: 650,
+        aspectRatio: 1,
 
-    defaultDate: '2019-01-12',
-    navLinks: true, // can click day/week names to navigate views
-    editable: true,
-    eventLimit: true, // allow "more" link when too many events
+
+    
+   
         // eventRender: function(event, $el) {
         //   $el.popover({
         //       title:event.title,

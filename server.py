@@ -1,9 +1,11 @@
 from jinja2 import StrictUndefined
 
-from flask import Flask, render_template, request, flash, redirect, session, jsonify
+from flask import Flask, render_template, request, flash, redirect, session, \
+    jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, Exercise, Image, Equipment, Category, Weight_Unit, Rep_Unit, Workout, User, Workout
+from model import connect_to_db, db, Exercise, Image, Equipment, Category, \
+    Weight_Unit, Rep_Unit, Workout, User, Workout
 from helper import fill_day_work_list
 
 app = Flask(__name__)
@@ -15,49 +17,57 @@ app.secret_key = "ABC"
 # This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
-@app.route('/register', methods=['GET'])
-def register_form():
-    return render_template("register.html")
+# @app.route('/register', methods=['GET'])
+# def register_form():
+#     return render_template("register.html")
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['POST', 'GET'])
 def register_process():
-    username = request.form["username"]
-    password = request.form["password"]
-    age = int(request.form["age"])
-    gender = request.form["gender"]
-    
-    new_user = User(username=username, password=password, age=age, gender=gender)
-    db.session.add(new_user)
-    db.session.commit()
+    if request.method == 'POST' and request.form:
+        username = request.form["username"]
+        password = request.form["password"]
+        age = int(request.form["age"])
+        gender = request.form["gender"]
+        
+        new_user = User(username=username, password=password, age=age, gender=gender)
+        db.session.add(new_user)
+        db.session.commit()
 
-    flash(f"User {username} added.")
-    return redirect('/')
+        flash(f"User {username} added.")
+        return redirect('/login?r=1')
+    else:
+        return render_template("register.html")
 
-@app.route('/login/', methods=['GET'])
-def login_form():
-    return render_template("login.html")
+# @app.route('/login/', methods=['GET'])
+# def login_form():
+#     return render_template("login.html")
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login_process():
-    username = request.form["username"]
-    password = request.form["password"]
+    if request.method == 'POST' and request.form:
+        username = request.form["username"]
+        password = request.form["password"]
 
-    user = User.query.filter_by(username=username).first()
-    if not user:
-        flash("No such user.")
-        return redirect("/register")
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash("No such user.")
+            return redirect("/register")
 
-    if user.password != password:
-        flash("Incorrect password")
-        return redirect("/login")
+        if user.password != password:
+            flash("Incorrect password")
+            return redirect("/login")
 
-    session['user_id'] = user.user_id
+        session['user_id'] = user.user_id
 
-    workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
-    day_workout_list = fill_day_work_list(workout_schedule)
+        workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
+        day_workout_list = fill_day_work_list(workout_schedule)
 
-    flash("Logged In")
-    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, user=user)
+        flash("Logged In")
+        return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, user=user)
+    else:
+        #r = request.form["registered"] if "registered" in request.form else None
+        r = request.args.get("r", False)
+        return render_template("login.html", registered=r)
 
 @app.route('/logout')
 def logout():
@@ -82,7 +92,7 @@ def choose_training_day():
     workout_created.scheduled_at = daysofweek_input_str
     print(workout_created.scheduled_at)
     db.session.commit()
-    return ('', 204)
+    return ("{'status': 'OK'}", 204)
 
 @app.route('/', methods=['POST'])    
 
@@ -119,7 +129,7 @@ def add_exercises_helper():
 @app.route('/addexercises', methods=['POST'])
 def addexercises():
     add_exercises_helper()
-    return ('', 204)
+    return ('',204)
 
 @app.route('/addexercises_and_show_dashboard', methods=['POST'])
 def addexercises_and_show_dashboard():
@@ -138,18 +148,20 @@ def dashboard():
 def delete_exercise(exercise_id):
     if session["user_id"]:
         exercise_to_delete = Exercise.query.get(exercise_id)
-        # print(exercise_to_delete)
-    workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-    day_workout_list = fill_day_work_list(workout_schedule)
-    db.session.delete(exercise_to_delete)
-    db.session.commit()
+            # print(exercise_to_delete)
+        workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
+        day_workout_list = fill_day_work_list(workout_schedule)
+        db.session.delete(exercise_to_delete)
+        db.session.commit()
 
-    for workout in workout_schedule:
-        if not workout.exercises:
-            db.session.delete(workout)
-            db.session.commit()
-   
-    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+        for workout in workout_schedule:
+            if not workout.exercises:
+                db.session.delete(workout)
+                db.session.commit()
+       
+        return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+    else:
+        return redirect('/')
 
 @app.route('/updateexercises/<int:exercise_id>')
 def update_details(exercise_id):

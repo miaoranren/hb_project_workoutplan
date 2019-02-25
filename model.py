@@ -51,12 +51,10 @@ class Exercise(db.Model):
         return f"<{self.name} - {self.category_id} - {self.equipment}>"
 
     def serialize(self):
-        return {
-                'exercise_id': self.exercise_id,
+        return {'exercise_id': self.exercise_id,
                 'name': self.name,
                 'description': self.description,
-                'equipment': self.equipment,
-                }
+                'equipment': self.equipment}
 
 class Image(db.Model):
     __tablename__ = "images"

@@ -16,37 +16,37 @@ def call_api(endpoint):
     return results['results']
 
 def detect_en(in_str):
+    desc_lang = []
     try:
         desc_lang = detect(in_str)
-    except:
-        return False
-    if desc_lang == 'en':
-        return True
-    return False
+    finally:
+        return 'en' in desc_lang
 
-def get_equipment_code(endpoint, equipment_input):
-    # endpoint = "equipment"
-    equipment_result_list = call_api(endpoint)
-    equipment = {}
-    for result_dict in equipment_result_list:
-        code = result_dict['id']
-        equipment_name = result_dict['name']
+# improve?
+# def get_equipment_code(endpoint, equipment_input):
+#     # endpoint = "equipment"
+#     equipment_result_list = call_api(endpoint)
+#     equipment = {}
+#     for result_dict in equipment_result_list:
+#         code = result_dict['id']
+#         equipment_name = result_dict['name']
         
-        if equipment_name not in equipment:
-            equipment[equipment_name] = code
-    return equipment[equipment_name]
+#         if equipment_name not in equipment:
+#             equipment[equipment_name] = code
+#     return equipment[equipment_name]
 
-def get_category_code(endpoint, category_input):
-    # endpoint = "equipment"
-    category_result_list = call_api(endpoint)
+# # same
+# def get_category_code(endpoint, category_input):
+#     # endpoint = "equipment"
+#     category_result_list = call_api(endpoint)
     
-    for result_dict in category_result_list:
-        code = result_dict['id']
-        category_name = result_dict['name']
+#     for result_dict in category_result_list:
+#         code = result_dict['id']
+#         category_name = result_dict['name']
         
-        if category_name not in category:
-            category[category_name] = code
-    return category[category_input]
+#         if category_name not in category:
+#             category[category_name] = code
+#     return category[category_input]
 
 def fill_day_work_list(workout_list):
     day_workout_list = {}
