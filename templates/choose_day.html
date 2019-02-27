@@ -5,6 +5,7 @@
 
 <form id="day-selection-form" action='/choose_training_day' method="POST">
     <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
+    description: <input type="text" name="description" id="memo">
     <input type="submit" name="submit">
 </form>
 
@@ -14,7 +15,8 @@
             evt.preventDefault();
 
             const formData = {
-                "workout-date": $('#start').val()
+                "workout-date": $('#start').val(),
+                "description": $('#memo').val()
             };
             console.log(formData);
             $.post('/choose_training_day', formData);
@@ -136,7 +138,7 @@
 
 </form>
 <div>
-<a href="/dashboard">Done
+<a href="/dashboard">Go to Dashboard
 </div>
 
 <script>
@@ -186,6 +188,7 @@
     $(function() {
         $('.detail-form').on('submit', function(evt) {
             evt.preventDefault();
+
 
             const formData = {
                 numberofsets: $('#set').val(),

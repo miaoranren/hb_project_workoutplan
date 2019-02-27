@@ -49,39 +49,52 @@
 </div>
 <!--     <div id='calendar'></div> -->
 <script>
-  $(document).ready(function() {
-    let events = [];
-    {% for workout in workout_schedule %}
-    event={};
-    event.title = '{{workout.workout_id}}'
-    event.start = '{{workout.scheduled_at}}'
-    events.push(event)
-    {% endfor %}
-    console.log(events)
-    $('#calendar').fullCalendar({
-        header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,basicWeek,basicDay'
-        },
-        height: 650,
-        aspectRatio: 1,
+    $(document).ready(function() {
+        let events = [];
+        {% for workout in workout_schedule %}
+        event = {};
+        event.id = '{{workout.workout_id}}'
+        event.title = '{{workout.description}}'
+        event.start = '{{workout.scheduled_at}}'
+        events.push(event)
+        {% endfor %}
+        console.log(events)
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            height: 650,
+            aspectRatio: 1,
+            events: events,
+            editable: true,
 
+            eventDrop: function(event, dayDelta, revertFunc) {
+                let msg = "Are you sure you want to move the workout \"" +
+                        event.title +
+                        "\" to " +
+                        event.start.format() +
+                        "?"
+                if (!confirm(msg)) {
+                    revertFunc();
+                }
 
-    
-   
-        // eventRender: function(event, $el) {
-        //   $el.popover({
-        //       title:event.title,
-        //       content: event.title,
-        //       trigger:'hover',
-        //       placement:'top',
-        //       container:'body'
-        //   });
-        // },
-    events: events
-  });
-  });
+                $.ajax({
+                    url: '/reschedule_workout',
+                    data: {
+                        id: event.id,
+                        newDate: event.start.format()
+                    },
+                    type: 'POST',
+                    // success: function(data) {
+                    //     $('#calendar').empty();
+                    //     loadCalendar();
+                    // }
+                });
+            }
+        });
+    });
 </script>
 
 <div id='calendar'></div>

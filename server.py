@@ -58,12 +58,8 @@ def login_process():
             return redirect("/login")
 
         session['user_id'] = user.user_id
-
-        workout_schedule = Workout.query.filter(Workout.user_id == user.user_id).all()
-        day_workout_list = fill_day_work_list(workout_schedule)
-
-        flash("Logged In")
-        return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, user=user)
+        # flash("Logged In")
+        return redirect('/dashboard')
     else:
         #r = request.form["registered"] if "registered" in request.form else None
         r = request.args.get("r", False)
@@ -87,12 +83,15 @@ def add_workout():
 def choose_training_day():
     workout_created = Workout.query.get(session['workout_id'])
     daysofweek_input_str = request.form.get("workout-date")
+    description = request.form.get("description")
 
     session['day_id'] = daysofweek_input_str
     workout_created.scheduled_at = daysofweek_input_str
+    workout_created.description = description
     print(workout_created.scheduled_at)
+    print(workout_created.description)
     db.session.commit()
-    return ("{'status': 'OK'}", 204)
+    return ('', 204)
 
 @app.route('/', methods=['POST'])    
 
@@ -199,11 +198,14 @@ def get_exercises_result():
     exercises_list = [e.serialize() for e in exercises]
     return jsonify(exercises_list)
 
-# @app.route('/search/id.json')
-# def adddetails(exercise_id):
-#     exercise = Exercise.query.get(exercise_id)
-#     exercise_json = exercise.serialize()
-#     return jsonify(exercise_json)
+@app.route('/reschedule_workout', methods=['POST'])
+def reschedule_workout():
+    workout_id = request.form.get('id')
+    workout_to_update = Workout.query.get(workout_id)
+    newDate = request.form.get('newDate')
+    workout_to_update.scheduled_at = newDate
+    db.session.commit()
+    return ('', 204)
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point

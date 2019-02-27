@@ -91,6 +91,7 @@ class Workout(db.Model):
     workout_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.user_id"), nullable=True)
     scheduled_at = db.Column(db.String(10))
+    description = db.Column(db.String(30))
 
     exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
     users = db.relationship('User', backref="workouts")
