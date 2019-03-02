@@ -1,68 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h1>Add a Training Day</h1>
 
-<form id="day-selection-form" action='/choose_training_day' method="POST">
-    <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
-    description: <input type="text" name="description" id="memo">
-    <input type="submit" name="submit">
-</form>
-
-<script>
-    $(function() {    
-        $('#day-selection-form').on('submit', evt => {
-            evt.preventDefault();
-
-            const formData = {
-                "workout-date": $('#start').val(),
-                "description": $('#memo').val()
-            };
-            console.log(formData);
-            $.post('/choose_training_day', formData);
-            $('.exercise-form').css({ display: 'block' });
-
-        //     const equipList = ['Barbell', 'Bench', 'Dumbbell', 'Gym mat','Incline bench', 'Kettlebell' , 'none (bodyweight exercise)', 'Pull-up bar', 'Swiss Ball', 'SZ-Bar'];
-        //     const categoryList = ['Abs', 'Arms', 'Back', 'Calves','Chest', 'Legs','Shoulders']
-        //     const $equpInputs = equipList.map((equip) => {
-        //         const $input = $('<input>', { type:'checkbox',
-        //                                     name:'equipment',
-        //                                     value:equip,
-        //                                     class:'equipment_checkboxes',
-        //                                     html:equip
-        //                                 });
-        //         return $equpInputs;
-        //     });
-        //     const $categoryInputs = categoryList.map((category) => {
-        //         const $input = $('<input>', { type:'checkbox',
-        //                                     name:'category',
-        //                                     value:category,
-        //                                     class:'category_checkboxes',
-        //                                     html:category
-        //                                 });
-        //         return $categoryInputs;
-        //     });
-
-        //     const headerInputList = ['Equipment:', 'Category:']
-        //     const $headerInputs = headerInputList.map((header) => {
-        //         const $input = $('<h2>', {
-        //             html:header
-        //         });
-
-        //         return $headerInputs
-        //     });
-
-        //     const $form = $('<form>', {id:'exercise-form',
-        //                                 action:'/choose_training_day',
-        //                                 method:'GET'
-        //                             });
-        //     $form.append($headerInuts)
-        //     $headerInuts.append($equpInputs)
-        });
-    });
-</script>
-
-<div class="exercise-form">
+<div>
 <h1>Workout Search</h1>
 <form id="exercise-form" action="/choose_training_day" method="GET">
     <h2>Equipment:</h2>
@@ -138,8 +78,10 @@
 
 </form>
 <div>
-<a href="/todaydashboard">Back to today dashboard
+<!-- <a href="/todaydashboard">Add more exercises to -->
+<button type="button" onclick="location.href = document.referrer; return false;">Back</button>
 </div>
+
 
 <script>
     $(function() {    

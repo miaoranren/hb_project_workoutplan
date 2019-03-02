@@ -7,6 +7,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db, Exercise, Image, Equipment, Category, \
     Weight_Unit, Rep_Unit, Workout, User, Workout
 from helper import fill_day_work_list
+from datetime import date
 
 app = Flask(__name__)
 
@@ -59,7 +60,7 @@ def login_process():
 
         session['user_id'] = user.user_id
         # flash("Logged In")
-        return redirect('/dashboard')
+        return redirect('/todaydashboard')
     else:
         #r = request.form["registered"] if "registered" in request.form else None
         r = request.args.get("r", False)
@@ -86,10 +87,20 @@ def choose_training_day():
     description = request.form.get("description")
 
     session['day_id'] = daysofweek_input_str
+    
+    # workout_to_add = Workout.query.filter_by(Workout.scheduled_at == session['day_id']).one()
+    # if workout_to_add:
+    #     if not workout_to_add.exercises:
+    #         workout_created.scheduled_at = daysofweek_input_str
+    #         workout_created.description = description
+    #     else:
+    #         flash('Exercise has been added.')
+    # else:
     workout_created.scheduled_at = daysofweek_input_str
     workout_created.description = description
-    print(workout_created.scheduled_at)
-    print(workout_created.description)
+
+    # print(workout_created.scheduled_at)
+    # print(workout_created.description)
     db.session.commit()
     return ('', 204)
 
@@ -141,7 +152,19 @@ def addexercises_and_show_dashboard():
 def dashboard():
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
-    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+    today_date = date.today()
+    print('today',today_date)
+    return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, today_date=today_date)
+
+@app.route('/todaydashboard')
+def todaydashboard():
+    today_date = date.today().strftime('%Y-%m-%d')
+    print('today',today_date)
+    workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
+    day_workout_list = fill_day_work_list(workout_schedule)
+    print(day_workout_list[today_date])
+
+    return render_template("workout_schedule_today.html",  day_workout_list=day_workout_list, workout_schedule=workout_schedule, today_date=today_date)
 
 @app.route('/deleteexercises/<int:exercise_id>', methods=['POST'])
 def delete_exercise(exercise_id):
@@ -149,16 +172,19 @@ def delete_exercise(exercise_id):
         exercise_to_delete = Exercise.query.get(exercise_id)
             # print(exercise_to_delete)
         workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-        day_workout_list = fill_day_work_list(workout_schedule)
+        # day_workout_list = fill_day_work_list(workout_schedule)
         db.session.delete(exercise_to_delete)
         db.session.commit()
+        print('ok')
+
 
         for workout in workout_schedule:
             if not workout.exercises:
                 db.session.delete(workout)
                 db.session.commit()
+                 #alert
        
-        return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
+        return ('', 204)
     else:
         return redirect('/')
 
@@ -207,6 +233,36 @@ def reschedule_workout():
     db.session.commit()
     return ('', 204)
 
+@app.route('/click_day_details', methods=['GET'])
+def click_day_details():
+    workout_id = request.args.get('id')
+    scheduled_at = request.args.get('date')
+    # workout_to_display = Workout.query.get(workout_id)
+    # print('wk', workout_to_display)
+    return redirect(f'/click_day_details/{workout_id}')
+
+@app.route('/click_day_details/<int:workout_id>')
+def show_details(workout_id):
+    workout_to_display = Workout.query.get(workout_id)
+    print(workout_to_display)
+    return render_template("click_day_details.html", workout=workout_to_display)
+
+@app.route('/addexercises.json/<int:exercise_id>', methods=['POST'])
+def update_exercises(exercise_id):
+    session['exercise_id'] = exercise_id
+    add_exercises_helper()
+    return ('', 204)
+
+@app.route('/add_more_exercises/<int:workout_id>')
+def add_more_exercises(workout_id):
+    workout_to_add_more_exercises = Workout.query.get(workout_id)
+
+
+    return render_template("add_more_exercise.html")
+
+
+
+ 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension

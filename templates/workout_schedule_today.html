@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+{% block content %}
+<div id="wrapper">
+    <div id='c1'>
+    <form id="createworkoutform" action="/create_workout" method="POST">
+        <input type="submit" value="Create your workout">
+    </form>
+    </div>
+    <table id="c2">
+        
+        <tr>
+            
+            {% for workouts in day_workout_list[today_date] %}
+            <th>
+                <h3>Workout Schedule {{ today_date }} {{workouts.description}}</h3>
+            </th>
+        </tr>
+        <tr>
+            <td>
+                {% if not workouts %}
+                    <span>rest day</span>
+                {% else %}
+                   
+                        {% for exercise in workouts.exercises %}
+                            <li>
+                                {{ exercise.name }} 
+                                <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
+                                    <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
+                                    <input type="submit" value="Delete">
+                                </form>
+                                <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
+                                    <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
+                                    <input type="submit" value="Update">
+                                </form>
+                                
+                                <div>{{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
+                                <br>
+                                <br>
+                                Description: {{exercise.description | safe}}
+                                <br>
+                                <br>
+                                Equipments:
+                                {% for equipment in exercise.equipments %}
+                                    {{equipment.equipment_name}}
+                                {% endfor %}
+                            </div>
+                            </li>
+                            <div>
+                                {% for image in exercise.images %}
+                                <img src={{ image.image_link }} height="42" width="42">
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                 
+                {% endif %}
+                </td>
+            </tr>
+            <br>
+        
+        {% endfor %}
+    </table>
+    <div class="detail-form" id="c3">
+    <form id="detail-form" action="/addexercises" method="POST">
+    <p>
+        <br>
+        <label> Select set number</label>
+        <select name="numberofsets" id="set">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+        <br>
+        <label> Enter reps for each set</label>
+        <input type="text" name="reps" id="rep" required>
+        <select name="repunit" id="repunit">
+            <option value="Kilometers">Kilometers</option>
+            <option value="Miles">Miles</option>
+            <option value="Minutes">Minutes</option>
+            <option value="Repetitions">Repetitions</option>
+            <option value="Seconds">Seconds</option>
+            <option value="Until Failure">Until Failure</option>
+        </select>
+
+        <br>
+        <label> Enter weights for each rep</label>
+        <input type="text" name="weights" id="weights">
+        <select name="weightunit" id="weightunit">
+            <option value="Body Weight">Body Weight</option>
+            <option value="kg">kg</option>
+            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+            <option value="lb">lb</option>
+            <option value="Miles Per Hour">Miles Per Hour</option>
+            <option value="Plates">Plates</option>
+        </select>
+
+    </p>
+    <div>
+        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+    </div>
+
+</form>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function() {
+        let events = [];
+        {% for workout in workout_schedule %}
+        event = {};
+        event.id = '{{ workout.workout_id }}'
+        event.title = '{{ workout.description }}'
+        event.start = '{{ workout.scheduled_at }}'
+
+        event.description = ''
+        {% for exercise in workout.exercises %}
+            event.description += '<li>{{ exercise.name }}</li>'
+        {% endfor %}
+        console.log(event.description)
+
+        events.push(event)
+        {% endfor %}
+        console.log(events)
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,basicWeek,basicDay'
+            },
+            height: 650,
+            aspectRatio: 1,
+            events: events,
+            editable: true,
+
+            eventDrop: function(event, dayDelta, revertFunc) {
+                let msg = "Are you sure you want to move the workout \"" +
+                        event.title +
+                        "\" to " +
+                        event.start.format() +
+                        "?"
+                if (!confirm(msg)) {
+                    revertFunc();
+                }
+
+                $.ajax({
+                    url: '/reschedule_workout',
+                    data: {
+                        id: event.id,
+                        newDate: event.start.format()
+                    },
+                    type: 'POST',
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            },
+
+            eventRender: function(event, $el) {
+                $el.popover({
+                    title: event.title,
+                    html:true,
+                    content: event.description,
+                    animation: true,
+                    trigger: 'hover',
+                    placement: 'top',
+                    container: '#calendar'
+                });
+                
+            },
+
+            eventClick: function(event, jsEvent, view) {
+                location.href = '/click_day_details/' + event.id
+                // alert('clicked');
+                // $.ajax({
+                //     url: '/click_day_details',
+                //     data: {
+                //         id: event.id,
+                //         date: event.start.format()
+                //     },
+                //     type:'GET',
+                // });
+            }
+            
+        });
+    });
+</script>
+<script>
+    $(function() {
+        $('.update-exercise').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            const exercise_id = $this.find('.to_update').val();
+            console.log(exercise_id)
+            $.get('/search/' + exercise_id);
+            $('#detail-form').attr('data-id', exercise_id);
+            $('.detail-form').toggle();
+        });
+    });
+</script>
+<script>
+    $(function(revertFunc) {
+        $('.delete-exericise').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            console.log($this);
+            const msg = "Are you sure to delete this exercise?";
+            // const exercise_id = $this.data('id');
+            const exercise_id = $this.find('.to_delete').val();
+            console.log("exercise_id:", exercise_id);
+            // const exercise_id = $('.to_delete').val();
+
+            if (!confirm(msg)) {
+                revertFunc();
+            }
+            $.post('/deleteexercises' + '/'+ exercise_id, (results) =>{
+               location.reload();
+
+            });
+
+        });
+    });
+</script>
+<script>
+    $(function() {
+        $('.detail-form').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            const exercise_id = $this.find("#detail-form").data('id');
+            const formData = {
+                numberofsets: $('#set').val(),
+                reps: $('#rep').val(),
+                repunit: $('#repunit').val(),
+                weights: $('#weights').val(),
+                weightunit: $('#weightunit').val()
+            };
+            console.log(formData);
+            $.post('/addexercises.json' + '/'+ exercise_id, formData, (results) =>{
+               location.reload();
+
+            });
+            
+
+        });
+    });
+</script>
+
+
+<div id='calendar'></div>
+</div>
+
+{% endblock %}

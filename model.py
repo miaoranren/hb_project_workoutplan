@@ -19,7 +19,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(64), nullable=True)
+    username = db.Column(db.String(64), nullable=True, unique=True)
     password = db.Column(db.String(64), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     gender = db.Column(db.String(16), nullable=True)
@@ -42,7 +42,7 @@ class Exercise(db.Model):
     rep_number = db.Column(db.Integer, nullable=True)
     priority = db.Column(db.Integer, nullable=True) 
 
-    images = db.relationship("Image")
+    images = db.relationship("Image",cascade="all,delete")
     equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
     weight_unit = db.relationship("Weight_Unit")
     rep_unit = db.relationship("Rep_Unit")
@@ -102,8 +102,8 @@ class Workout(db.Model):
 
     def serialize(self):
         return {
-                'workout_id' :self.workout_id,
-                'scheduled_at': self.scheduled_at
+            'workout_id' :self.workout_id,
+            'scheduled_at': self.scheduled_at
         }
 
 class WorkoutExercise(db.Model):

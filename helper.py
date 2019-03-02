@@ -22,31 +22,6 @@ def detect_en(in_str):
     finally:
         return 'en' in desc_lang
 
-# improve?
-# def get_equipment_code(endpoint, equipment_input):
-#     # endpoint = "equipment"
-#     equipment_result_list = call_api(endpoint)
-#     equipment = {}
-#     for result_dict in equipment_result_list:
-#         code = result_dict['id']
-#         equipment_name = result_dict['name']
-        
-#         if equipment_name not in equipment:
-#             equipment[equipment_name] = code
-#     return equipment[equipment_name]
-
-# # same
-# def get_category_code(endpoint, category_input):
-#     # endpoint = "equipment"
-#     category_result_list = call_api(endpoint)
-    
-#     for result_dict in category_result_list:
-#         code = result_dict['id']
-#         category_name = result_dict['name']
-        
-#         if category_name not in category:
-#             category[category_name] = code
-#     return category[category_input]
 
 def fill_day_work_list(workout_list):
     day_workout_list = {}
@@ -69,8 +44,3 @@ def fill_day_work_list(workout_list):
     return day_workout_list
 
 
-# def get_code(equipment_input):
-#     equipment[]
-# print(get_equipment_code("equipment", "Swiss Ball"))
-# print(get_category_code("exercisecategory", "Arms"))
-# print(call_api('equipment'))

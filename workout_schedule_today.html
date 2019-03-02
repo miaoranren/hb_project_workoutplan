@@ -6,9 +6,9 @@
 </form>
 <div>
     <h1>Workout Schedule</h1>
-    {% for (day, workouts) in day_workout_list.items() %}
+    {% for workouts in day_workout_list[today_date] %}
        
-        <h3>{{ day }}</h3>
+        <h3>{{ today_date }}</h3>
             {% if not workouts %}
                 <span>rest day</span>
             {% else %}
