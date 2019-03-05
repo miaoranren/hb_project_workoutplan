@@ -1,103 +1,88 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<table>
+<table class='container'>
     <tr>
         <th class="workout">{{ workout.scheduled_at }} {{ workout.description }} </th>
         <a href="/add_more_exercises/{{workout.workout_id}}">Add more exercise</a>
-
-       
     </tr>
 
     {% for exercise in workout.exercises %}
 
     <tr>
-        
-            <td>
+        <td>
             {{ exercise.name }} 
           
             <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
                 <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
-                <input type="submit" value="Delete" >
+                <input type="submit" value="Delete" class="form-submit-button">
             </form>
             <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
                 <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
-                <input type="submit" value="Update" >
+                <input type="submit" value="Update" class="form-submit-button">
             </form>
             <div class='exercise-detals'>
       
-            {{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
+            {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{  exercise.weight_unit.weight_unit_name }} 
             <div>
-            <br>
-            <br>
-     
-            Description: {{exercise.description | safe}}
-       
-            <br>
-            <br>
-         
-            Equipments:
-            {% for equipment in exercise.equipments %}
-                {{equipment.equipment_name}}
-            {% endfor %}
- 
-        </div>
-        </li>
-        <div>
-            {% for image in exercise.images %}
-            <img src={{ image.image_link }} height="42" width="42">
-            {% endfor %}
-        </div>
+                <br>
+                Description: {{ exercise.description | safe }}
+                <br>
+                Equipments:
+                {% for equipment in exercise.equipments %}
+                    {{ equipment.equipment_name }}
+                {% endfor %}
+            </div>
+            <div>
+                {% for image in exercise.images %}
+                <img src={{ image.image_link }} height="42" width="42">
+                {% endfor %}
+            </div>
         </td>
     </tr>
     {% endfor %}
-
-    
-   
 </table>
+
 <div class="detail-form">
     <form id="detail-form" action="/addexercises" method="POST">
-    <p>
-        <br>
-        <label> Select set number</label>
-        <select name="numberofsets" id="set">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-        <br>
-        <label> Enter reps for each set</label>
-        <input type="text" name="reps" id="rep" required>
-        <select name="repunit" id="repunit">
-            <option value="Kilometers">Kilometers</option>
-            <option value="Miles">Miles</option>
-            <option value="Minutes">Minutes</option>
-            <option value="Repetitions">Repetitions</option>
-            <option value="Seconds">Seconds</option>
-            <option value="Until Failure">Until Failure</option>
-        </select>
+        <p>
+            <br>
+            <label> Select set number</label>
+            <select name="numberofsets" id="set">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+            <br>
+            <label> Enter reps for each set</label>
+            <input type="text" name="reps" id="rep" required>
+            <select name="repunit" id="repunit">
+                <option value="Kilometers">Kilometers</option>
+                <option value="Miles">Miles</option>
+                <option value="Minutes">Minutes</option>
+                <option value="Repetitions">Repetitions</option>
+                <option value="Seconds">Seconds</option>
+                <option value="Until Failure">Until Failure</option>
+            </select>
 
-        <br>
-        <label> Enter weights for each rep</label>
-        <input type="text" name="weights" id="weights">
-        <select name="weightunit" id="weightunit">
-            <option value="Body Weight">Body Weight</option>
-            <option value="kg">kg</option>
-            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
-            <option value="lb">lb</option>
-            <option value="Miles Per Hour">Miles Per Hour</option>
-            <option value="Plates">Plates</option>
-        </select>
-
-    </p>
-    <div>
+            <br>
+            <label> Enter weights for each rep</label>
+            <input type="text" name="weights" id="weights">
+            <select name="weightunit" id="weightunit">
+                <option value="Body Weight">Body Weight</option>
+                <option value="kg">kg</option>
+                <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+                <option value="lb">lb</option>
+                <option value="Miles Per Hour">Miles Per Hour</option>
+                <option value="Plates">Plates</option>
+            </select>
+        </p>
+        <div>
         <!-- <a href="/search/{}"> --><input type="submit" name="submit">
-    </div>
-
-</form>
+        </div>
+    </form>
 <div>
-
 
 <script>
     $(function() {
@@ -112,6 +97,7 @@
         });
     });
 </script>
+
 <script>
     $(function(revertFunc) {
         $('.delete-exericise').on('submit', function(evt) {
@@ -127,14 +113,15 @@
             if (!confirm(msg)) {
                 revertFunc();
             }
-            $.post('/deleteexercises' + '/'+ exercise_id, (results) =>{
-               location.reload();
-
-            });
-
+            else {
+                $.post('/deleteexercises' + '/'+ exercise_id, (results) => {
+                    location.reload();
+                });
+            }
         });
     });
 </script>
+
 <script>
     $(function() {
         $('.detail-form').on('submit', function(evt) {
@@ -158,6 +145,5 @@
         });
     });
 </script>
-
 
 {% endblock %}

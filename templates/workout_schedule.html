@@ -27,9 +27,7 @@
                             
                             <div>{{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 
                             <br>
-                            <br>
                             Description: {{exercise.description | safe}}
-                            <br>
                             <br>
                             Equipments:
                             {% for equipment in exercise.equipments %}
@@ -46,7 +44,6 @@
                 {% endfor %}
             {% endif %}
         <br>
-    
     {% endfor %}
 </div>
 <!--     <div id='calendar'></div> -->
