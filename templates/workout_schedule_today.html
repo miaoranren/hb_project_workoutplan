@@ -6,13 +6,13 @@
         <input type="submit" value="Create your workout">
     </form>
     </div>
-    <table id="c2">
+    <table id="c2" class='container'>
         
         <tr>
             
             {% for workouts in day_workout_list[today_date] %}
             <th>
-                <h3>Workout Schedule {{ today_date }} {{workouts.description}}</h3>
+                <h3>Workout Schedule for Today {{ today_date }} {{workouts.description}}</h3>
             </th>
         </tr>
         <tr>
@@ -26,11 +26,11 @@
                                 {{ exercise.name }} 
                                 <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
                                     <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
-                                    <input type="submit" value="Delete">
+                                    <input type="submit" value="Delete" class="form-submit-button">
                                 </form>
                                 <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
                                     <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
-                                    <input type="submit" value="Update">
+                                    <input type="submit" value="Update" class="form-submit-button">
                                 </form>
                                 
                                 <div>{{exercise.set_number}} x {{exercise.rep_number}} {{exercise.rep_unit.rep_unit_name}} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name}} 

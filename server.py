@@ -250,12 +250,15 @@ def show_details(workout_id):
 @app.route('/addexercises.json/<int:exercise_id>', methods=['POST'])
 def update_exercises(exercise_id):
     session['exercise_id'] = exercise_id
+    session['existing_workout_id']
     add_exercises_helper()
     return ('', 204)
 
 @app.route('/add_more_exercises/<int:workout_id>')
 def add_more_exercises(workout_id):
     workout_to_add_more_exercises = Workout.query.get(workout_id)
+    session['workout_id'] = workout_id
+    print(session['workout_id'])
 
 
     return render_template("add_more_exercise.html")
