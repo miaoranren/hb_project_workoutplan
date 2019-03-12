@@ -8,6 +8,7 @@ from model import connect_to_db, db, Exercise, Image, Equipment, Category, \
     Weight_Unit, Rep_Unit, Workout, User, Workout
 from helper import fill_day_work_list
 from datetime import date
+import pytz
 
 app = Flask(__name__)
 
@@ -39,10 +40,6 @@ def register_process():
     else:
         return render_template("register.html")
 
-# @app.route('/login/', methods=['GET'])
-# def login_form():
-#     return render_template("login.html")
-
 @app.route('/login', methods=['POST', 'GET'])
 def login_process():
     if request.method == 'POST' and request.form:
@@ -59,10 +56,11 @@ def login_process():
             return redirect("/login")
 
         session['user_id'] = user.user_id
-        # flash("Logged In")
+        session['username'] = user.username
+        
         return redirect('/todaydashboard')
     else:
-        #r = request.form["registered"] if "registered" in request.form else None
+        
         r = request.args.get("r", False)
         return render_template("login.html", registered=r)
 
@@ -85,26 +83,16 @@ def choose_training_day():
     workout_created = Workout.query.get(session['workout_id'])
     daysofweek_input_str = request.form.get("workout-date")
     description = request.form.get("description")
-
     session['day_id'] = daysofweek_input_str
     
-    # workout_to_add = Workout.query.filter_by(Workout.scheduled_at == session['day_id']).one()
-    # if workout_to_add:
-    #     if not workout_to_add.exercises:
-    #         workout_created.scheduled_at = daysofweek_input_str
-    #         workout_created.description = description
-    #     else:
-    #         flash('Exercise has been added.')
-    # else:
     workout_created.scheduled_at = daysofweek_input_str
     workout_created.description = description
-
-    # print(workout_created.scheduled_at)
-    # print(workout_created.description)
     db.session.commit()
     return ('', 204)
 
-@app.route('/', methods=['POST'])    
+@app.route('/')
+def first_page():
+    return render_template("first_page.html")    
 
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
@@ -133,9 +121,9 @@ def add_exercises_helper():
     workout_created_before = Workout.query.get(session['workout_id'])
     workout_created_before.exercises.append(exercise)
     db.session.commit()
+    flash("Exercise successfully added.")
 
-# @app.route('/addexercises/<int:exercise_id>', methods=['POST'])
-# def addexercises(exercise_id):
+
 @app.route('/addexercises', methods=['POST'])
 def addexercises():
     add_exercises_helper()
@@ -153,13 +141,13 @@ def dashboard():
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
     today_date = date.today()
-    print('today',today_date)
+    print('today', today_date)
     return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule, today_date=today_date)
 
 @app.route('/todaydashboard')
 def todaydashboard():
     today_date = date.today().strftime('%Y-%m-%d')
-    print('today',today_date)
+    print('today', today_date)
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
     print(day_workout_list[today_date])
@@ -172,7 +160,7 @@ def delete_exercise(exercise_id):
         exercise_to_delete = Exercise.query.get(exercise_id)
             # print(exercise_to_delete)
         workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-        # day_workout_list = fill_day_work_list(workout_schedule)
+
         db.session.delete(exercise_to_delete)
         db.session.commit()
         print('ok')
@@ -244,13 +232,14 @@ def click_day_details():
 @app.route('/click_day_details/<int:workout_id>')
 def show_details(workout_id):
     workout_to_display = Workout.query.get(workout_id)
+    session['workout_id'] = workout_id
     print(workout_to_display)
     return render_template("click_day_details.html", workout=workout_to_display)
 
 @app.route('/addexercises.json/<int:exercise_id>', methods=['POST'])
 def update_exercises(exercise_id):
     session['exercise_id'] = exercise_id
-    session['existing_workout_id']
+    
     add_exercises_helper()
     return ('', 204)
 

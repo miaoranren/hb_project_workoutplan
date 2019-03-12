@@ -1,45 +1,89 @@
 {% extends 'base.html' %}
 {% block content %}
-<div id="wrapper">
-    <div id='c1'>
-        <form id="createworkoutform" action="/create_workout" method="POST">
-            <input type="submit" value="Create your workout">
-        </form>
-    </div>
-    <table id="c2" class='container'>
+<body class="dashboard-top">
+    
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="/todaydashboard">
+        <img src="../static/17647.png"  width="30" height="30" class="d-inline-block align-top" alt="">
+        Fitastic
+    </a>
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ session['username'] }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="background-image"></div>
+     
+    <table class='container table table-hover col-4'>
+        <thead class="thead-dark">
         <tr>    
             {% for workouts in day_workout_list[today_date] %}
             <th>
-                <h3>Workout Schedule for Today {{ today_date }} {{workouts.description}}</h3>
+                <h3>Workout Schedule for Today {{ today_date }} - {{workouts.description}}</h3>
             </th>
         </tr>
-        <tr>
-            <td>
-                {% if not workouts %}
+        </thead>
+        
+            {% if not workouts %}
                 <span>rest day</span>
                 {% else %}   
                 {% for exercise in workouts.exercises %}
-                <li>
-                    {{ exercise.name }} 
+        <tr class="show-button">
+            
+            <td> 
+                {{ exercise.name }}
+                    <div class = "row">
                     <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
                         <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
-                        <input type="submit" value="Delete" class="form-submit-button">
+                        <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
                     </form>
+             
                     <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
                         <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
-                        <input type="submit" value="Update" class="form-submit-button">
+                        <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
                     </form>
-                    
-                    <div>{{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
+                </div>
+                Equipments:
+                {% for equipment in exercise.equipments %}
+                {{ equipment.equipment_name }}
+                {% endfor %}
+                <br>
+                {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
                     <br>
-                    Description: {{ exercise.description | safe }}
-                    <br>
-                    Equipments:
-                    {% for equipment in exercise.equipments %}
-                        {{ equipment.equipment_name }}
-                    {% endfor %}
+                <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong">
+                          Instructions</button>
+
+                        <!-- Modal -->
+                <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">{{ exercise.name }} </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                        Instruction: {{ exercise.description | safe }}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        
+                      </div>
                     </div>
-                </li>
+                  </div>
+                </div>
+            </div>
+               
                 <div>
                     {% for image in exercise.images %}
                     <img src={{ image.image_link }} height="42" width="42">
@@ -53,7 +97,7 @@
         {% endfor %}
     </table>
 
-    <div class="detail-form" id="c3">
+    <div class="detail-form col-2" id="c3">
         <form id="detail-form" action="/addexercises" method="POST">
             <p>
                 <br>
@@ -92,6 +136,14 @@
             </div>
         </form>
     </div>
+    <div id='calendar' class="col-6"></div>
+
+    <div class="row">
+        <form id="createworkoutform" action="/create_workout" method="POST">
+            <input type="submit" value="Add a training day">
+        </form>
+    </div>
+    </div>
 
     <script>
         $(document).ready(function() {
@@ -113,15 +165,16 @@
             console.log(events)
             $('#calendar').fullCalendar({
                 header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,basicWeek,basicDay'
+                    close: 'fa-times',
+                    prev: 'fa-chevron-left',
+                    next: 'fa-chevron-right',
+                    
                 },
                 height: 650,
                 aspectRatio: 1,
                 events: events,
                 editable: true,
-
+                themeSystem:'bootstrap4',
                 eventDrop: function(event, dayDelta, revertFunc) {
                     let msg = "Are you sure you want to move the workout \"" +
                             event.title +
@@ -229,7 +282,9 @@
                 };
                 console.log(formData);
                 $.post('/addexercises.json' + '/'+ exercise_id, formData, (results) =>{
+
                    location.reload();
+                   $('.detail-form').toggle();
 
                 });
                 
@@ -238,6 +293,8 @@
         });
     </script>
 
-    <div id='calendar'></div>
+    
 </div>
+</div>
+</body>
 {% endblock %}

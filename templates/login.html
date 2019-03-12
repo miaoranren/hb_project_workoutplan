@@ -3,6 +3,7 @@
 {% if registered != False %}
   You have succesfully registered. Please log in.
 {% endif %}
+<div class="container">
   <h1>Login</h1>
   <form action="/login" method="POST">
 
@@ -23,4 +24,7 @@
     </div>
 
   </form>
+  <span>No accounts? </span>
+  <a href="/register"> Register </a>
+</div>
 {% endblock %}

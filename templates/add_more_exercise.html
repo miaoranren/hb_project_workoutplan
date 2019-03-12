@@ -1,36 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
+<nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="/todaydashboard">
+        <img src="/docs/4.0/assets/brand/bootstrap-solid.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+        Fitastic
+    </a>
+    <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle"  id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{ session['username'] }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="/logout">Logout</a>
+            </div>
+        </li>
+    </ul>
+</nav>
 
 
 <div>
-<h1>Workout Search</h1>
+<h3>Search Exercises:</h3>
 <form id="exercise-form" action="/choose_training_day" method="GET">
-    <h2>Equipment:</h2>
-    <input type="checkbox" name="equipment" value="Barbell" class="equipment_checkboxes">Barbell
-    <input type="checkbox" name="equipment" value="Bench" class="equipment_checkboxes">Bench
-    <input type="checkbox" name="equipment" value="Dumbbell" class="equipment_checkboxes">Dumbbell
-    <input type="checkbox" name="equipment" value="Gym mat" class="equipment_checkboxes">Gym mat
-    <input type="checkbox" name="equipment" value="Incline bench" class="equipment_checkboxes">Incline bench
-    <input type="checkbox" name="equipment" value="Kettlebell" class="equipment_checkboxes">Kettlebell
-    <input type="checkbox" name="equipment" value="none (bodyweight exercise)" class="equipment_checkboxes">none (bodyweight exercise)
-    <input type="checkbox" name="equipment" value="Pull-up bar" class="equipment_checkboxes">Pull-up bar
-    <input type="checkbox" name="equipment" value="Swiss Ball" class="equipment_checkboxes">Swiss Ball
-    <input type="checkbox" name="equipment" value="SZ-Bar" class="equipment_checkboxes">SZ-Bar
-
-    <h2>Body Parts:</h2>
-    <input type="checkbox" name="category" value="Abs" class="category_checkboxes">Abs
-    <input type="checkbox" name="category" value="Arms" class="category_checkboxes">Arms
-    <input type="checkbox" name="category" value="Back" class="category_checkboxes">Back
-    <input type="checkbox" name="category" value="Calves" class="category_checkboxes">Calves
-    <input type="checkbox" name="category" value="Chest" class="category_checkboxes">Chest
-    <input type="checkbox" name="category" value="Legs" class="category_checkboxes">Legs
-    <input type="checkbox" name="category" value="Shoulders" class="category_checkboxes">Shoulders
-
-    <div>
+    <h4>Equipment:</h4>
+    <select name="equipment" class="equipment_checkboxes selectpicker">
+        <option value="">At Gym</option>
+        <option value="Barbell"> Barbell</option>
+        <option value="Bench"> Bench</option>
+        <option value="Dumbbell"> Dumbbell</option>
+        <option value="Gym mat"> Gym mat</option>
+        <option value="Incline bench"> Incline bench</option>
+        <option value="Kettlebell"> Kettlebell</option>
+        <option value="none (bodyweight exercise)"> none (bodyweight exercise)</option>
+        <option value="Pull-up bar"> Pull-up bar</option>
+        <option value="Swiss Ball"> Swiss Ball</option>
+        <option value="SZ-Bar"> SZ-Bar</option>
+        
+    </select>
+    <h4>Body Parts:</h4>
+    <select name="category" class="category_checkboxes selectpicker">
+        <option value="Abs">Abs</option>
+        <option value="Arms">Arms</option>
+        <option value="Back">Back</option>
+        <option value="Calves">Calves</option>
+        <option value="Chest">Chest</option>
+        <option value="Legs">Legs</option>
+        <option value="Shoulders">Shoulders</option>
+        
+    </select>
+     <div>
     <br>
     <input id="exercise_submit" type="submit" name="submit">
     </div>
 </form>
+</div>
 </div>
 
 <div id="exercise_result">
@@ -77,6 +99,7 @@
     </div>
 
 </form>
+<br>
 <div>
 
 <button type="button" onclick="location.href = document.referrer; return false;">Back</button>
@@ -89,8 +112,8 @@
             evt.preventDefault();
 
             const formData = {
-                equipment: $('.equipment_checkboxes:checked').val(),
-                category: $('.category_checkboxes:checked').val()
+                equipment: $('.equipment_checkboxes').val(),
+                category: $('.category_checkboxes').val()
             };
             console.log(formData);
              
@@ -101,7 +124,7 @@
                 list_html += "<ul>";
                 for (var i = 0; i < exercise.length; i++) {
                     var obj = exercise[i];
-                    list_html += "<li>" + "<a class='detail' data-id=" + obj.exercise_id + ">" + obj.name + "</li>";
+                    list_html += "<a class='list-group-item list-group-item-action' data-id=" + obj.exercise_id + ">" + obj.name ;
                 }
                 list_html += "</ul>"
                 $('#exercise_result').html(list_html);
