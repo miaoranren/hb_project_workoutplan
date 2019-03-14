@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<body class="dashboard-top">
+
     
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/todaydashboard">
-        <img src="../static/17647.png"  width="30" height="30" class="d-inline-block align-top" alt="">
+        <i class="fas fa-dumbbell"></i>
+        <!-- <img src="../static/logo.png"  width="30" height="30" class="d-inline-block align-top" alt=""> -->
         Fitastic
     </a>
     <ul class="navbar-nav">
@@ -18,10 +19,11 @@
         </li>
     </ul>
 </nav>
+<body class="dashboard-top">
 <div class="container-fluid">
 
     <div class="row">
-        <div class="background-image"></div>
+        
      
     <table class='container table table-hover col-4'>
         <thead class="thead-dark">
@@ -41,7 +43,12 @@
             
             <td> 
                 {{ exercise.name }}
-                    <div class = "row">
+                <div>
+                    {% for image in exercise.images %}
+                    <img src="{{ image.image_link }}" height="80" width="80">
+                    {% endfor %}
+                </div>
+                <div class = "row">
                     <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
                         <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
                         <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
@@ -52,14 +59,16 @@
                         <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
                     </form>
                 </div>
+               
+                
                 Equipments:
                 {% for equipment in exercise.equipments %}
                 {{ equipment.equipment_name }}
                 {% endfor %}
                 <br>
                 {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
-                    <br>
-                <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong">
+                <br>
+                <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{exercise.exercise_id}}">
                           Instructions</button>
 
                         <!-- Modal -->
@@ -67,13 +76,13 @@
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">{{ exercise.name }} </h5>
+                        <h5 class="modal-title" id="exampleModalLongTitle"> </h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
                       <div class="modal-body">
-                        Instruction: {{ exercise.description | safe }}
+                        
                       </div>
                       <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -84,11 +93,7 @@
                 </div>
             </div>
                
-                <div>
-                    {% for image in exercise.images %}
-                    <img src={{ image.image_link }} height="42" width="42">
-                    {% endfor %}
-                </div>
+                
                 {% endfor %}
                 {% endif %}
             </td>
@@ -97,7 +102,7 @@
         {% endfor %}
     </table>
 
-    <div class="detail-form col-2" id="c3">
+    <div class="detail-form col-2" id="c3" style="border-radius: 15px;">
         <form id="detail-form" action="/addexercises" method="POST">
             <p>
                 <br>
@@ -140,155 +145,177 @@
 
     <div class="row">
         <form id="createworkoutform" action="/create_workout" method="POST">
-            <input type="submit" value="Add a training day">
+            <input type="submit" value="Add a training day" class="btn-primary">
         </form>
     </div>
     </div>
-
     <script>
-        $(document).ready(function() {
-            let events = [];
-            {% for workout in workout_schedule %}
-            event = {};
-            event.id = '{{ workout.workout_id }}'
-            event.title = '{{ workout.description }}'
-            event.start = '{{ workout.scheduled_at }}'
+            $(document).ready(function() {
+        let events = [];
+        {% for workout in workout_schedule %}
+        event = {};
+        event.id = '{{ workout.workout_id }}'
+        event.title = '{{ workout.description }}'
+        event.start = '{{ workout.scheduled_at }}'
 
-            event.description = ''
-            {% for exercise in workout.exercises %}
-                event.description += '<li>{{ exercise.name }}</li>'
-            {% endfor %}
-            console.log(event.description)
+        event.description = ''
+        {% for exercise in workout.exercises %}
+            event.description += '<li class="exercise-calendar">{{ exercise.name }}</li>'
+        {% endfor %}
+        console.log(event.description)
 
-            events.push(event)
-            {% endfor %}
-            console.log(events)
-            $('#calendar').fullCalendar({
-                header: {
-                    close: 'fa-times',
-                    prev: 'fa-chevron-left',
-                    next: 'fa-chevron-right',
-                    
-                },
-                height: 650,
-                aspectRatio: 1,
-                events: events,
-                editable: true,
-                themeSystem:'bootstrap4',
-                eventDrop: function(event, dayDelta, revertFunc) {
-                    let msg = "Are you sure you want to move the workout \"" +
-                            event.title +
-                            "\" to " +
-                            event.start.format() +
-                            "?"
-                    if (!confirm(msg)) {
-                        revertFunc();
-                    }
-                    else {
-                        $.ajax({
-                            url: '/reschedule_workout',
-                            data: {
-                                id: event.id,
-                                newDate: event.start.format()
-                            },
-                            type: 'POST',
-                            success: function() {
-                                location.reload();
-                            }
-                        });
-                    }
-                },
-
-                eventRender: function(event, $el) {
-                    $el.popover({
-                        title: event.title,
-                        html:true,
-                        content: event.description,
-                        animation: true,
-                        trigger: 'hover',
-                        placement: 'top',
-                        container: '#calendar'
-                    });
-                    
-                },
-
-                eventClick: function(event, jsEvent, view) {
-                    location.href = '/click_day_details/' + event.id
-                    // alert('clicked');
-                    // $.ajax({
-                    //     url: '/click_day_details',
-                    //     data: {
-                    //         id: event.id,
-                    //         date: event.start.format()
-                    //     },
-                    //     type:'GET',
-                    // });
-                }
+        events.push(event)
+        {% endfor %}
+        console.log(events)
+        $('#calendar').fullCalendar({
+            header: {
+                close: 'fa-times',
+                prev: 'fa-chevron-left',
+                next: 'fa-chevron-right',
                 
-            });
-        });
-    </script>
-
-    <script>
-        $(function() {
-            $('.update-exercise').on('submit', function(evt) {
-                evt.preventDefault();
-                const $this = $(this);
-                const exercise_id = $this.find('.to_update').val();
-                console.log(exercise_id)
-                $.get('/search/' + exercise_id);
-                $('#detail-form').attr('data-id', exercise_id);
-                $('.detail-form').toggle();
-            });
-        });
-    </script>
-
-    <script>
-        $(function(revertFunc) {
-            $('.delete-exericise').on('submit', function(evt) {
-                evt.preventDefault();
-                const $this = $(this);
-                console.log($this);
-                const msg = "Are you sure to delete this exercise?";
-                // const exercise_id = $this.data('id');
-                const exercise_id = $this.find('.to_delete').val();
-                console.log("exercise_id:", exercise_id);
-                // const exercise_id = $('.to_delete').val();
-
+            },
+            height: 650,
+            aspectRatio: 1,
+            events: events,
+            editable: true,
+            themeSystem:'bootstrap4',
+            eventDrop: function(event, dayDelta, revertFunc) {
+                let msg = "Are you sure you want to move the workout \"" +
+                        event.title +
+                        "\" to " +
+                        event.start.format() +
+                        "?"
                 if (!confirm(msg)) {
                     revertFunc();
                 }
                 else {
-                    $.post('/deleteexercises' + '/'+ exercise_id, (results) => {
-                        location.reload();
+                    $.ajax({
+                        url: '/reschedule_workout',
+                        data: {
+                            id: event.id,
+                            newDate: event.start.format()
+                        },
+                        type: 'POST',
+                        success: function() {
+                            location.reload();
+                        }
                     });
                 }
+            },
+
+            eventRender: function(event, $el) {
+                $el.popover({
+                    title: event.title,
+                    html:true,
+                    content: event.description,
+                    animation: true,
+                    trigger: 'hover',
+                    placement: 'top',
+                    container: '#calendar'
+                });
+                
+            },
+
+            eventClick: function(event, jsEvent, view) {
+                location.href = '/click_day_details/' + event.id
+            
+            }
+            
+        });
+    });
+    </script>
+<!--     <script src="../static/workout_schedule_today.js"></script> -->
+    <script>
+        $(function() {
+        $('.update-exercise').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            const exercise_id = $this.find('.to_update').val();
+            console.log(exercise_id)
+            $.get('/search/' + exercise_id);
+            $('#detail-form').attr('data-id', exercise_id);
+            $('.detail-form').toggle();
+        });
+    });
+    </script>
+    <script>
+        $(function(revertFunc) {
+        $('.delete-exericise').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            console.log($this);
+            const msg = "Are you sure to delete this exercise?";
+            // const exercise_id = $this.data('id');
+            const exercise_id = $this.find('.to_delete').val();
+            console.log("exercise_id:", exercise_id);
+            // const exercise_id = $('.to_delete').val();
+
+            if (!confirm(msg)) {
+                revertFunc();
+            }
+            else {
+                $.post('/deleteexercises' + '/'+ exercise_id, (results) => {
+                    location.reload();
+                });
+            }
+        });
+    });
+    </script>
+    <script>
+        $(function() {
+        $('.detail-form').on('submit', function(evt) {
+            evt.preventDefault();
+            const $this = $(this);
+            const exercise_id = $this.find("#detail-form").data('id');
+            const formData = {
+                numberofsets: $('#set').val(),
+                reps: $('#rep').val(),
+                repunit: $('#repunit').val(),
+                weights: $('#weights').val(),
+                weightunit: $('#weightunit').val()
+            };
+            console.log(formData);
+            $.post('/addexercises.json' + '/'+ exercise_id, formData, (results) =>{
+
+               location.reload();
+               $('.detail-form').toggle();
+
+            });
+            
+
+        });
+    });
+
+    </script>
+    <script>
+        $(function(){
+        $('.description-button').on('click', function(evt){
+                
+                const $this = $(this);
+        
+                const exercise_id = $this.data('exercise_id');
+                console.log(exercise_id);
+                $.get('/exercises_description.json' + '/' + exercise_id, (results)=>{
+                    const exercises_description = results;
+
+                    $('.modal-body').html(exercises_description);
+                });
             });
         });
     </script>
-
     <script>
-        $(function() {
-            $('.detail-form').on('submit', function(evt) {
-                evt.preventDefault();
-                const $this = $(this);
-                const exercise_id = $this.find("#detail-form").data('id');
-                const formData = {
-                    numberofsets: $('#set').val(),
-                    reps: $('#rep').val(),
-                    repunit: $('#repunit').val(),
-                    weights: $('#weights').val(),
-                    weightunit: $('#weightunit').val()
-                };
-                console.log(formData);
-                $.post('/addexercises.json' + '/'+ exercise_id, formData, (results) =>{
-
-                   location.reload();
-                   $('.detail-form').toggle();
-
-                });
+        $(function(){
+        $('.description-button').on('click', function(evt){
                 
+                const $this = $(this);
+        
+                const exercise_id = $this.data('exercise_id');
+                console.log(exercise_id);
+                $.get('/exercises_name.json' + '/' + exercise_id, (results)=>{
+                    const exercises_name = results;
 
+                    $('.modal-title').html(exercises_name);
+                });
             });
         });
     </script>

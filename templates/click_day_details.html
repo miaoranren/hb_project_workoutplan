@@ -3,7 +3,7 @@
 <body class="dashboard-top">
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/todaydashboard">
-        <img src="../static/17647.png" width="30" height="30" class="d-inline-block align-top" alt="">
+       <i class="fas fa-dumbbell"></i>
         Fitastic
     </a>
     <ul class="navbar-nav">
@@ -17,27 +17,28 @@
         </li>
     </ul>
 </nav>
-
-<table class='container'>
-    <tr>
-        {% if not workout %}
-        <th> Rest Day </th>
-        {% else %}
-        <th class="workout">{{ workout.scheduled_at }} {{ workout.description }} </th>
-        <a href="/add_more_exercises/{{workout.workout_id}}">Add more exercise</a>
-        <br>
-        <a href="/todaydashboard"> Back to Main Dashboard</a>
-        {% endif %}
-    </tr>
+<table class='container table table-hover' style="width: 50%">
+    <thead class="thead-dark">
+        <tr>
+            {% if not workout %}
+            <th> Rest Day </th>
+            {% else %}
+            <th class="workout">{{ workout.scheduled_at }} {{ workout.description }} </th>
+            {% endif %}
+        </tr>
+    </thead>
     {% if not workout %}
     No workout scheduled
     {% else %}
     {% for exercise in workout.exercises %}
-
-
-    <tr>
+    <tr class="show-button">
         <td> 
             {{ exercise.name }}
+            <div>
+                {% for image in exercise.images %}
+                <img src="{{ image.image_link }}" height="80" width="80">
+                {% endfor %}
+            </div>
             <div class = "row">
                 <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
                     <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
@@ -46,47 +47,43 @@
                 <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
                     <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
                     <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
-                    </form>
-                </div>
-                Equipments:
-                {% for equipment in exercise.equipments %}
-                {{ equipment.equipment_name }}
-                {% endfor %}
-                <br>
-                {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
-                    <br>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
-                          Instructions</button>
-
-
-                        <!-- Modal -->
-                <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
+                </form>
+            </div>
+            Equipments:
+            {% for equipment in exercise.equipments %}
+            {{ equipment.equipment_name }}
+            {% endfor %}
+            <br>
+            {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
+            <br>
+            <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{exercise.exercise_id}}">
+            Instructions</button>
+            <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">{{ exercise.name }} </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        Instruction: {{ exercise.description | safe }}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        
-                      </div>
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
                     </div>
                   </div>
                 </div>
             </div>
-       
-    </div>
-</td>
+        </div>
+    </td>
 </tr>
 {% endfor %}
 {% endif %}
 </table>
+<a href="/add_more_exercises/{{workout.workout_id}}" class="btn">Add more exercise</a>
 
 <div class="detail-form">
     <form id="detail-form" action="/addexercises" method="POST">
@@ -130,66 +127,7 @@
 <div>
 </body>
 
-<script>
-    $(function() {
-        $('.update-exercise').on('submit', function(evt) {
-            evt.preventDefault();
-            const $this = $(this);
-            const exercise_id = $this.find('.to_update').val();
-            console.log(exercise_id)
-            $.get('/search/' + exercise_id);
-            $('#detail-form').attr('data-id', exercise_id);
-            $('.detail-form').toggle();
-        });
-    });
-</script>
 
-<script>
-    $(function(revertFunc) {
-        $('.delete-exericise').on('submit', function(evt) {
-            evt.preventDefault();
-            const $this = $(this);
-            console.log($this);
-            const msg = "Are you sure to delete this exercise?";
-            // const exercise_id = $this.data('id');
-            const exercise_id = $this.find('.to_delete').val();
-            console.log("exercise_id:", exercise_id);
-            // const exercise_id = $('.to_delete').val();
-
-            if (!confirm(msg)) {
-                revertFunc();
-            }
-            else {
-                $.post('/deleteexercises' + '/'+ exercise_id, (results) => {
-                    location.reload();
-                });
-            }
-        });
-    });
-</script>
-
-<script>
-    $(function() {
-        $('.detail-form').on('submit', function(evt) {
-            evt.preventDefault();
-            const $this = $(this);
-            const exercise_id = $this.find("#detail-form").data('id');
-            const formData = {
-                numberofsets: $('#set').val(),
-                reps: $('#rep').val(),
-                repunit: $('#repunit').val(),
-                weights: $('#weights').val(),
-                weightunit: $('#weightunit').val()
-            };
-            console.log(formData);
-            $.post('/addexercises.json' + '/'+ exercise_id, formData, (results) =>{
-               location.reload();
-
-            });
-            
-
-        });
-    });
-</script>
+<script src="../static/click_day_clicks.js"></script>
 
 {% endblock %}

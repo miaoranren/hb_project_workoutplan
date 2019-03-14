@@ -1,0 +1,217 @@
+        .intro-heading{
+        
+            width: 800px;
+            padding: 50px;
+           
+        }
+        .container-1 {
+            display: flex;
+            justify-content: space-around;
+            padding: 100px;
+            margin-right: auto;
+            margin-left:auto;
+            
+
+        }
+        .login-form{
+            background-color: grey;
+            font-style: "Open Sans Bold", Arial, Helvetica, sans-serfi;
+            font-size:1rem;
+            padding: 5rem;
+            opacity: 0.8;
+            border-radius: 15px;
+
+        }
+        .username{
+            margin: 2rem;
+
+        }
+        .password{
+            margin: 2rem;
+        }
+        .register{
+            color: #4C586F;
+        }
+
+        .page-top{
+            background-image:  url('../static/firstpage5.jpg');
+            background-size: cover;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 500;
+            color: white;
+
+
+        }
+        header .intro-text .intro-lead-in{
+            font-family:"Open Sans Bold", Arial, Helvetica, sans-serfi;
+            font-style: italic;
+            font-size:22px;
+            line-height: 22px;
+            margin-bottom: 25px;
+            text-align: center;
+            
+
+        }
+        .btn-xl{
+            color:white;
+            
+            border-color:#204a87;
+            font-family:"Open Sans Bold", Arial, Helvetica, sans-serfi;
+            text-transform: uppercase;
+            font-weight: 700;
+            border-radius: 3px;
+            font-size:18px;
+            padding: 20px 40px;
+        }
+        .btn{
+            display: inline-block;
+            margin-bottom: 0;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            touch-action:manipulation;
+            cursor: pointer;
+            border: 1px solid;
+        }
+        .exercise-form {
+            /*display: block;*/
+            opacity: 0;
+            transition:all 1s ease-in-out;
+
+            /*z-index: 0;*/
+        }
+        .detail {
+            cursor: pointer;
+        }
+        .detail-form {
+            display: none;
+            box-shadow: 0px 0px 1px 5000px rgba(0,0,0,0.5);
+            position: absolute;
+            width: 500px;
+            height: 300px;
+            z-index: 15;
+            padding: 10px 10px 10px;
+            top:70%;
+            left:60%;
+            margin: -380px 50px 50px -380px;
+            background-color: #CAE4DB;
+
+        }
+        #calendar {
+            display: inline-box;
+
+
+        }
+        .popover{
+            border: 2px black;
+        }
+        .arrow{
+            border-right-color: red !important;
+        }
+        table, th, td {
+            border:1px solid black;
+        }
+        table{
+            border-radius: 15px;
+        }
+        th,td{
+            padding: 15px;
+            text-align: left;
+        }
+        #wrapper{
+            display: flex;
+            justify-content: center;
+           
+        }
+        #c1, #c2, #calendar{
+            width: 33%;
+            padding: 30px;
+        }
+        .form-submit-button {
+
+            background-color: grey;
+            border: none;
+            size:2px;
+            visibility: hidden;
+        }
+
+        .show-button:hover .form-submit-button {
+            visibility: visible;
+            background-color: grey;
+            color: white;
+            border: none;
+            size: 1px;
+            text-shadow:none;
+            cursor: pointer;
+
+        }
+       
+
+        .list-group-item{
+            cursor: pointer;
+            background-color: #CAE4DB;
+        }
+        .row{
+            padding: 10px;
+        }
+        .btn-primary {
+        color: #FFF;
+        background-color: #4C586F;
+        border-color: #4C586F;
+        cursor: pointer;
+        }
+        .btn-primary.disabled, .btn-primary:disabled {
+        color: #fff;
+        background-color: #4C586F;
+        border-color: #4C586F;
+        }
+        .alert-info {
+        color: #0c5460;
+        background-color: #4C586F;
+        border-color: #bee5eb;
+        opacity: 0.6;
+        }
+        .fc-bootstrap4 a.fc-event:not([href]):not([tabindex]) {
+            color: black;
+        }
+        .display-exericse{
+            display: flex;
+            justify-content: space-between;
+        }
+        .table{
+            border-radius: 15px;
+        }
+        .dashboard-top{
+            background-image: url('../static/concrete-texture.png')
+        }
+        .fc-title{
+            color: white;
+        }
+        .exercise-calendar{
+            list-style-type: square;
+        }
+        .choose-day{
+            
+            transition:all 1s ease-in-out;
+            position: absolute;
+            top: 70px;
+            opacity: 1;
+            z-index: 2;
+        }
+        a.btn {
+    
+            appearance: button;
+            color: #FFF;
+            background-color: #4C586F;
+            border-color: #4C586F;
+            cursor: pointer;
+            border-radius: 15px;
+        }
+        .navbar{
+            position: relative;
+        }
+        .dropdown-menu{
+            position: absolute;
+        }
+        

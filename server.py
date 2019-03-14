@@ -12,16 +12,10 @@ import pytz
 
 app = Flask(__name__)
 
-# Required to use Flask sessions and the debug toolbar
 app.secret_key = "ABC"
 
-# Normally, if you use an undefined variable in Jinja2, it fails silently.
-# This is horrible. Fix this so that, instead, it raises an error.
 app.jinja_env.undefined = StrictUndefined
 
-# @app.route('/register', methods=['GET'])
-# def register_form():
-#     return render_template("register.html")
 
 @app.route('/register', methods=['POST', 'GET'])
 def register_process():
@@ -121,7 +115,7 @@ def add_exercises_helper():
     workout_created_before = Workout.query.get(session['workout_id'])
     workout_created_before.exercises.append(exercise)
     db.session.commit()
-    flash("Exercise successfully added.")
+    
 
 
 @app.route('/addexercises', methods=['POST'])
@@ -152,13 +146,13 @@ def todaydashboard():
     day_workout_list = fill_day_work_list(workout_schedule)
     print(day_workout_list[today_date])
 
+
     return render_template("workout_schedule_today.html",  day_workout_list=day_workout_list, workout_schedule=workout_schedule, today_date=today_date)
 
 @app.route('/deleteexercises/<int:exercise_id>', methods=['POST'])
 def delete_exercise(exercise_id):
     if session["user_id"]:
         exercise_to_delete = Exercise.query.get(exercise_id)
-            # print(exercise_to_delete)
         workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
 
         db.session.delete(exercise_to_delete)
@@ -170,7 +164,6 @@ def delete_exercise(exercise_id):
             if not workout.exercises:
                 db.session.delete(workout)
                 db.session.commit()
-                 #alert
        
         return ('', 204)
     else:
@@ -225,8 +218,6 @@ def reschedule_workout():
 def click_day_details():
     workout_id = request.args.get('id')
     scheduled_at = request.args.get('date')
-    # workout_to_display = Workout.query.get(workout_id)
-    # print('wk', workout_to_display)
     return redirect(f'/click_day_details/{workout_id}')
 
 @app.route('/click_day_details/<int:workout_id>')
@@ -251,14 +242,29 @@ def add_more_exercises(workout_id):
 
 
     return render_template("add_more_exercise.html")
+@app.route('/exercises_description.json/<int:exercise_id>')
+def exercises_description(exercise_id):
+    exercise_to_display = Exercise.query.get(exercise_id)
+    exercise_to_display_description = exercise_to_display.description
+
+    return jsonify(exercise_to_display_description)
+@app.route('/exercises_name.json/<int:exercise_id>')
+def exercises_name(exercise_id):
+    exercise_to_display = Exercise.query.get(exercise_id)
+    exercise_to_display_name = exercise_to_display.name
+
+    return jsonify(exercise_to_display_name)
+
+
+
 
 
 
  
 if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
-    # that we invoke the DebugToolbarExtension
+
     app.debug = True
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     connect_to_db(app)
 

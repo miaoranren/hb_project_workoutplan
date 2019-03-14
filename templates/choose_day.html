@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<body id="after-login-page">
-<nav class="navbar navbar-light bg-light">
+<body class="dashboard-top">
+<nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/todaydashboard">
-        <img src="../static/17647.png"  width="30" height="30" class="d-inline-block align-top" alt="">
+        <i class="fas fa-dumbbell"></i>
         Fitastic
     </a>
     <ul class="navbar-nav">
@@ -18,43 +18,29 @@
     </ul>
 </nav>
 <div class="container-fluid">
-    <div class="row">
-        <a href="/todaydashboard"> Back to Main Dashboard</a>
-    </div>
-    <div class="row">
+    <div class="choose-day">
         <h3>Add a Training Day</h3>
-    </div>
-    <div class="col-6">
         <form id="day-selection-form" action='/choose_training_day' method="POST">
             <input type="date" id="start" name="workout-date" min="2019-01-01" max="2019-12-31">
             description: <input type="text" name="description" id="memo">
             <small id="emailHelp" class="form-text text-muted">A description of what is done on this day (e.g. "Pull day") or what body parts are trained (e.g. "Arms and abs")</small>
-            <input type="submit" name="submit" value="Save">
+            <input type="submit" name="submit" value="Save" class="choose-day-button">
         </form>
     </div>
 
-<script>
-    $(function() {    
-        $('#day-selection-form').on('submit', evt => {
-            evt.preventDefault();
 
-            const formData = {
-                "workout-date": $('#start').val(),
-                "description": $('#memo').val()
-            };
-            console.log(formData);
-            $.post('/choose_training_day', formData);
-            $('.exercise-form').css({ display: 'block' });
+<div class="display-exericse">
+   
+<div class="exercise-form" style="width: 50%">
 
-        });
-    });
-</script>
 
-<div class="exercise-form">
-<h3>Search Exercises</h3>
 <form id="exercise-form" action="/choose_training_day" method="GET">
-    <h4>Equipment:</h4>
-    <select name="equipment" class="equipment_checkboxes selectpicker" >
+    <h3>Search Exercises</h3>
+     <div class="success-info" style="display: none;">
+    Exercise successfully added!
+    </div>
+    <h4>Equipment</h4>
+    <select name="equipment" class="equipment_checkboxes selectpicker">
         <option value="">At Gym</option>
         <option value="Barbell">Barbell</option>
         <option value="Bench">Bench</option>
@@ -84,12 +70,15 @@
     <input id="exercise_submit" type="submit" name="submit">
     </div>
 </form>
+    </div>
+    <div class="row" style="width: 50%">
+    <div id="exercise_result" style="width: 100%" >
+    </div>
+    </div>
 </div>
 
-<div id="exercise_result" class="col-6">
-</div>
 
-<div class="detail-form">
+<div class="detail-form" style="border-radius: 15px">
     <form id="detail-form" action="/addexercises" method="POST">
     <p>
         <br>
@@ -128,83 +117,14 @@
     <div>
         <!-- <a href="/search/{}"> --><input type="submit" name="submit">
     </div>
+    
 
 </form>
 </div>
 
 </body>
 
+<script src="../static/choose_day.js"></script>
 
-<script>
-    $(function() {    
-        $('#exercise-form').on('submit', evt => {
-            evt.preventDefault();
-
-            const formData = {
-                equipment: $('.equipment_checkboxes').val(),
-                category: $('.category_checkboxes').val()
-            };
-            console.log(formData);
-             
-            $.get('/choose_exercises.json', formData, (results) => {
-                const exercise = results;
-                var list_html = "<br>"
-                list_html += "Results:"
-                list_html += "<div>";
-                for (var i = 0; i < exercise.length; i++) {
-                    var obj = exercise[i];
-                    list_html +=   "<a class='list-group-item list-group-item-action' data-id=" + obj.exercise_id + ">" + obj.name ;
-                }
-                list_html += "</div>"
-                $('#exercise_result').html(list_html);
-            });
-        });
-    });
-</script>
-
-<script>
-    $(function() {
-        $('#exercise_result').on('click', function(evt) {
-            evt.preventDefault();
-
-            const $evt = $(evt.target);
-            const id = $evt.data('id');
-            const url = '/addexercises/' + id;
-            console.log("id: ", id);
-
-            $.get('/search/' + id, id);
-            // $('.detail-form').attr('action', url);
-            $('.detail-form').toggle();
-        });
-    });
-</script>
-<script>
-    $(function() {
-        $('.detail-form').on('submit', function(evt) {
-            evt.preventDefault();
-
-
-            const formData = {
-                numberofsets: $('#set').val(),
-                reps: $('#rep').val(),
-                repunit: $('#repunit').val(),
-                weights: $('#weights').val(),
-                weightunit: $('#weightunit').val()
-            };
-            console.log(formData);
-            $.post('/addexercises', formData);
-            $('.detail-form').toggle();
-
-        });
-    });
-</script>
-
-<script>
-    $(function(){
-        $('.done').on('click',function(){
-            location.href = '/addexercises'
-        });
-    });
-</script>
 
 {% endblock %}

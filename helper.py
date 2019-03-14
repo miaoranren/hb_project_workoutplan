@@ -1,6 +1,6 @@
 import requests
 
-# pip install langdetect
+
 from langdetect import detect
 from datetime import datetime, timedelta
 

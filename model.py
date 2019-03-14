@@ -48,7 +48,7 @@ class Exercise(db.Model):
     rep_unit = db.relationship("Rep_Unit")
 
     def __repr__(self):
-        return f"<{self.name} - {self.category_id} - {self.equipment}>"
+        return f"<{self.name} - {self.category_id} - {self.equipment}-{self.images}>"
 
     def serialize(self):
         return {'exercise_id': self.exercise_id,
@@ -134,23 +134,6 @@ class Rep_Unit(db.Model):
     def __repr__(self):
         return f"<{self.rep_unit_id} - {self.rep_unit_name}>"
 
-# class Schedule_Day(db.Model):
-#     __tablename__ = "scheduled_at_days"
-
-#     day_id = db.Column(db.Integer, primary_key=True)
-#     day_of_week = db.Column(db.String(64))
-
-#     def __repr__(self):
-#         return f"<{self.day_id} - {self.day_of_week}>"
-
-# class ScheduleWorkout(db.Model):
-#     __tablename__ = "scheduledday_workout"
-#     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     day_id = db.Column(db.Integer, db.ForeignKey("scheduled_at_days.day_id"), nullable=False)
-#     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
-
-#     def __repr__(self):
-#         return f"<{self.day_id} - {self.workout_id}>"
 
 #####################################################################
 # Helper functions
