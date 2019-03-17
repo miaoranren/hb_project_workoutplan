@@ -1,4 +1,4 @@
-from model import Category, Exercise, Image, Workout, Equipment, ExerciseEquipment, WorkoutExercise, User, Rep_Unit, Weight_Unit, connect_to_db, db
+from model import Category, Exercise, ExerciseSetting, Image, Workout, Equipment, ExerciseEquipment, WorkoutExerciseSetting, User, Rep_Unit, Weight_Unit, connect_to_db, db
 from server import app
 from helper import call_api, detect_en
 

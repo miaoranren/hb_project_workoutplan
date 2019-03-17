@@ -1,6 +1,5 @@
 import requests
 
-
 from langdetect import detect
 from datetime import datetime, timedelta
 
@@ -22,7 +21,6 @@ def detect_en(in_str):
     finally:
         return 'en' in desc_lang
 
-
 def fill_day_work_list(workout_list):
     day_workout_list = {}
 
@@ -42,5 +40,3 @@ def fill_day_work_list(workout_list):
             if workout.scheduled_at == day:
                 day_workout_list[day].append(workout)
     return day_workout_list
-
-

@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, flash, redirect, session, \
     jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 
-from model import connect_to_db, db, Exercise, Image, Equipment, Category, \
+from model import connect_to_db, db, Exercise, ExerciseSetting, Image, Equipment, Category, \
     Weight_Unit, Rep_Unit, Workout, User, Workout
 from helper import fill_day_work_list
 from datetime import date
@@ -96,25 +96,25 @@ def adddetails(exercise_id):
         session['workout_id'] = workout_id
     return ('', 204)
 
-def add_exercises_helper():
+def add_exercises_helper(new_exercise):
     workout_id = session['workout_id']
     exercise_id = session['exercise_id']
-    print("in addexercises: ", workout_id, exercise_id)
+    print("add_exercises_helper:", new_exercise, workout_id, exercise_id)
 
     current_workout = Workout.query.get(workout_id)
-    exercise = None
-    for e in current_workout.exercises:
-        if e.exercise_id == exercise_id:
-            exercise = e
-            break
+    exercise_setting = None
+    if not new_exercise:
+        for es in current_workout.exercise_settings:
+            if es.exercise_id == exercise_id:
+                exercise_setting = es
+                break
 
-    # add new exercise
-    if exercise is None:
-        e = Exercise.query.get(exercise_id)
-        current_workout.exercises.append(e)
-        exercise = current_workout.exercises[-1]
+    # add new exercise setting
+    if exercise_setting is None:
+        new_es = ExerciseSetting(exercise_id=int(exercise_id))
+        current_workout.exercise_settings.append(new_es)
+        exercise_setting = current_workout.exercise_settings[-1]
 
-    # exercise = Exercise.query.get(exercise_id)
     numberofsets = request.form.get("numberofsets")
     reps = request.form.get("reps")
     repunit = request.form.get("repunit")
@@ -124,22 +124,22 @@ def add_exercises_helper():
     weight_unit_id = Weight_Unit.query.filter(Weight_Unit.weight_unit_name == weightunit).one().weight_unit_id
     repetition_unit = Rep_Unit.query.filter(Rep_Unit.rep_unit_name == repunit).one().rep_unit_id
 
-    exercise.weight_unit_id = weight_unit_id
-    exercise.repetition_unit = repetition_unit
-    exercise.weight = weights
-    exercise.set_number = numberofsets
-    exercise.rep_number = reps
+    exercise_setting.weight_unit_id = weight_unit_id
+    exercise_setting.repetition_unit = repetition_unit
+    exercise_setting.weight = weights
+    exercise_setting.set_number = numberofsets
+    exercise_setting.rep_number = reps
 
     db.session.commit()
 
 @app.route('/addexercises', methods=['POST'])
 def addexercises():
-    add_exercises_helper()
-    return ('',204)
+    add_exercises_helper(True)
+    return ('', 204)
 
 @app.route('/addexercises_and_show_dashboard', methods=['POST'])
 def addexercises_and_show_dashboard():
-    add_exercises_helper()
+    add_exercises_helper(True)
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
     return render_template("workout_schedule.html", day_workout_list=day_workout_list, workout_schedule=workout_schedule)
@@ -242,7 +242,7 @@ def show_details(workout_id):
 @app.route('/addexercises.json/<int:exercise_id>', methods=['POST'])
 def update_exercises(exercise_id):
     session['exercise_id'] = exercise_id
-    add_exercises_helper()
+    add_exercises_helper(False)
     return ('', 204)
 
 @app.route('/add_more_exercises/<int:workout_id>')

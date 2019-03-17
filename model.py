@@ -1,7 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy 
 
-
-
 db = SQLAlchemy()
 
 class Category(db.Model):
@@ -35,26 +33,38 @@ class Exercise(db.Model):
     description =db.Column(db.String(4096), nullable=True)
     equipment = db.Column(db.ARRAY(db.Integer()), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey("categories.category_id"), nullable=True)
-    weight_unit_id = db.Column(db.Integer, db.ForeignKey("weight_unit.weight_unit_id"),nullable=True) 
-    repetition_unit = db.Column(db.Integer, db.ForeignKey("rep_unit.rep_unit_id"), nullable=True) 
-    weight = db.Column(db.Integer, nullable=True)
-    set_number = db.Column(db.Integer, nullable=True)
-    rep_number = db.Column(db.Integer, nullable=True)
-    priority = db.Column(db.Integer, nullable=True) 
 
-    images = db.relationship("Image",cascade="all,delete")
+    images = db.relationship("Image", cascade="all,delete")
     equipments = db.relationship("Equipment", secondary="exercise_equipment", backref="exercises")
-    weight_unit = db.relationship("Weight_Unit")
-    rep_unit = db.relationship("Rep_Unit")
 
     def __repr__(self):
-        return f"<{self.name} - {self.category_id} - {self.equipment}-{self.images}>"
+        return f"<{self.name} - {self.category_id} - {self.equipment} - {self.images}>"
 
     def serialize(self):
         return {'exercise_id': self.exercise_id,
                 'name': self.name,
                 'description': self.description,
                 'equipment': self.equipment}
+
+class ExerciseSetting(db.Model):
+    __tablename__ = 'exercise_setting'
+
+    exercise_setting_id = db.Column(db.Integer, primary_key=True)
+
+    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.exercise_id"))
+    weight_unit_id = db.Column(db.Integer, db.ForeignKey("weight_unit.weight_unit_id"), nullable=True)
+    repetition_unit = db.Column(db.Integer, db.ForeignKey("rep_unit.rep_unit_id"), nullable=True)
+
+    weight = db.Column(db.Integer, nullable=True)
+    set_number = db.Column(db.Integer, nullable=True)
+    rep_number = db.Column(db.Integer, nullable=True)
+
+    exercise = db.relationship("Exercise")
+    weight_unit = db.relationship("Weight_Unit")
+    rep_unit = db.relationship("Rep_Unit")
+
+    def __repr__(self):
+        return f"<{self.exercise_setting_id} - {self.exercise_id} - {self.weight} - {self.set_number} - {self.rep_number}>"
 
 class Image(db.Model):
     __tablename__ = "images"
@@ -93,12 +103,11 @@ class Workout(db.Model):
     scheduled_at = db.Column(db.String(10))
     description = db.Column(db.String(30))
 
-    exercises = db.relationship('Exercise', secondary='workout_exercise', backref='workouts')
+    exercise_settings = db.relationship('ExerciseSetting', secondary='workout_exercise_setting', backref='workouts')
     users = db.relationship('User', backref="workouts")
-    # scheduled_at_days = db.relationship('Schedule_Day', secondary='scheduledday_workout', backref='workouts')
 
     def __repr__(self):
-        return f"<Workout id: {self.workout_id} - User id: {self.user_id} - scheduled_at: {self.scheduled_at} - exercises: {self.exercises}>"
+        return f"<Workout id: {self.workout_id} - User id: {self.user_id} - scheduled_at: {self.scheduled_at} - exercise_settings: {self.exercise_settings}>"
 
     def serialize(self):
         return {
@@ -106,15 +115,25 @@ class Workout(db.Model):
             'scheduled_at': self.scheduled_at
         }
 
-class WorkoutExercise(db.Model):
-    __tablename__ = 'workout_exercise'
+class WorkoutExerciseSetting(db.Model):
+    __tablename__ = 'workout_exercise_setting'
 
     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
-    exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.exercise_id"), nullable=False)
+    exercise_setting_id = db.Column(db.Integer, db.ForeignKey("exercise_setting.exercise_setting_id"), nullable=False)
 
     def __repr__(self):
-        return f"<{self.workout_id} has {self.exercise_id}>"
+        return f"<{self.workout_id} has {self.exercise_setting_id}>"
+
+# class WorkoutExercise(db.Model):
+#     __tablename__ = 'workout_exercise'
+
+#     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
+#     exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.exercise_id"), nullable=False)
+
+#     def __repr__(self):
+#         return f"<{self.workout_id} has {self.exercise_id}>"
 
 class Weight_Unit(db.Model):
     __tablename__ = 'weight_unit'
@@ -133,7 +152,6 @@ class Rep_Unit(db.Model):
 
     def __repr__(self):
         return f"<{self.rep_unit_id} - {self.rep_unit_name}>"
-
 
 #####################################################################
 # Helper functions

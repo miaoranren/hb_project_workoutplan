@@ -30,33 +30,33 @@
     {% if not workout %}
     No workout scheduled
     {% else %}
-    {% for exercise in workout.exercises %}
+    {% for exercise_setting in workout.exercise_settings %}
     <tr class="show-button">
         <td> 
-            {{ exercise.name }}
+            {{ exercise_setting.exercise.name }}
             <div>
-                {% for image in exercise.images %}
+                {% for image in exercise_setting.exercise.images %}
                 <img src="{{ image.image_link }}" height="80" width="80">
                 {% endfor %}
             </div>
             <div class = "row">
-                <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
-                    <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
+                <form action='/deleteexercises/{{exercise_setting.exercise_id}}' method="POST" class="delete-exericise">
+                    <input type="hidden" name="exercise_id" value="{{exercise_setting.exercise_id}}" class="to_delete">
                     <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
                 </form>
-                <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
-                    <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
+                <form action='/updateexercises/{{exercise_setting.exercise_id}}' class="update-exercise">
+                    <input type="hidden" name="exercise_id" value="{{exercise_setting.exercise_id}}" class="to_update">
                     <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
                 </form>
             </div>
             Equipments:
-            {% for equipment in exercise.equipments %}
+            {% for equipment in exercise_setting.exercise.equipments %}
             {{ equipment.equipment_name }}
             {% endfor %}
             <br>
-            {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
+            {{ exercise_setting.set_number }} x {{ exercise_setting.rep_number }} {{ exercise_setting.rep_unit.rep_unit_name }} at {{ exercise_setting.weight }} {{ exercise_setting.weight_unit.weight_unit_name }}
             <br>
-            <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{exercise.exercise_id}}">
+            <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{exercise_setting.exercise_id}}">
             Instructions</button>
             <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
                 <div class="modal-dialog" role="document">
