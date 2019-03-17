@@ -83,7 +83,10 @@
 {% endfor %}
 {% endif %}
 </table>
+
+{% if workout %}
 <a href="/add_more_exercises/{{workout.workout_id}}" class="btn">Add more exercise</a>
+{% endif %}
 
 <div class="detail-form">
     <form id="detail-form" action="/addexercises" method="POST">

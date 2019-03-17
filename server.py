@@ -91,12 +91,30 @@ def first_page():
 @app.route('/search/<int:exercise_id>')
 def adddetails(exercise_id):
     session['exercise_id'] = exercise_id
+    workout_id = request.args.get('workout_id')
+    if workout_id:
+        session['workout_id'] = workout_id
     return ('', 204)
 
 def add_exercises_helper():
+    workout_id = session['workout_id']
     exercise_id = session['exercise_id']
-    print("in addexercises: ", exercise_id)
-    exercise = Exercise.query.get(exercise_id)
+    print("in addexercises: ", workout_id, exercise_id)
+
+    current_workout = Workout.query.get(workout_id)
+    exercise = None
+    for e in current_workout.exercises:
+        if e.exercise_id == exercise_id:
+            exercise = e
+            break
+
+    # add new exercise
+    if exercise is None:
+        e = Exercise.query.get(exercise_id)
+        current_workout.exercises.append(e)
+        exercise = current_workout.exercises[-1]
+
+    # exercise = Exercise.query.get(exercise_id)
     numberofsets = request.form.get("numberofsets")
     reps = request.form.get("reps")
     repunit = request.form.get("repunit")
@@ -112,11 +130,7 @@ def add_exercises_helper():
     exercise.set_number = numberofsets
     exercise.rep_number = reps
 
-    workout_created_before = Workout.query.get(session['workout_id'])
-    workout_created_before.exercises.append(exercise)
     db.session.commit()
-    
-
 
 @app.route('/addexercises', methods=['POST'])
 def addexercises():
@@ -157,8 +171,6 @@ def delete_exercise(exercise_id):
 
         db.session.delete(exercise_to_delete)
         db.session.commit()
-        print('ok')
-
 
         for workout in workout_schedule:
             if not workout.exercises:
@@ -230,7 +242,6 @@ def show_details(workout_id):
 @app.route('/addexercises.json/<int:exercise_id>', methods=['POST'])
 def update_exercises(exercise_id):
     session['exercise_id'] = exercise_id
-    
     add_exercises_helper()
     return ('', 204)
 
@@ -239,9 +250,8 @@ def add_more_exercises(workout_id):
     workout_to_add_more_exercises = Workout.query.get(workout_id)
     session['workout_id'] = workout_id
     print(session['workout_id'])
-
-
     return render_template("add_more_exercise.html")
+
 @app.route('/exercises_description.json/<int:exercise_id>')
 def exercises_description(exercise_id):
     exercise_to_display = Exercise.query.get(exercise_id)
@@ -254,12 +264,6 @@ def exercises_name(exercise_id):
     exercise_to_display_name = exercise_to_display.name
 
     return jsonify(exercise_to_display_name)
-
-
-
-
-
-
  
 if __name__ == "__main__":
 

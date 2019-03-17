@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    
 <nav class="navbar navbar-dark bg-dark">
     <a class="navbar-brand" href="/todaydashboard">
         <i class="fas fa-dumbbell"></i>
@@ -19,138 +18,136 @@
         </li>
     </ul>
 </nav>
-<body class="dashboard-top">
-<div class="container-fluid">
 
-    <div class="row">
-        
-     
-    <table class='container table table-hover col-4'>
-        <thead class="thead-dark">
-        <tr>    
-            {% for workouts in day_workout_list[today_date] %}
-            <th>
-                <h3>Workout Schedule for Today {{ today_date }} - {{workouts.description}}</h3>
-            </th>
-        </tr>
-        </thead>
-        
-            {% if not workouts %}
-                <span>rest day</span>
-                {% else %}   
+<body class="dashboard-top">
+    <div class="container-fluid">
+        <div class="row">
+            <table class='container table table-hover col-4'>
+                <thead class="thead-dark">
+                    <tr>
+                        <th>
+                            <h3>Workout Schedule for Today {{ today_date }}</h3>
+                        </th>
+                    </tr>
+                </thead>
+
+                {% if not day_workout_list[today_date] %}
+                <td>
+                    <h3>Rest Day</h3>
+                </td>
+                {% endif %}
+
+                {% for workouts in day_workout_list[today_date] %}
+                <td>
+                    <h3>{{ workouts.description }}</h3>
+                </td>
                 {% for exercise in workouts.exercises %}
-        <tr class="show-button">
-            
-            <td> 
-                {{ exercise.name }}
-                <div>
-                    {% for image in exercise.images %}
-                    <img src="{{ image.image_link }}" height="80" width="80">
-                    {% endfor %}
-                </div>
-                <div class = "row">
-                    <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
-                        <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_delete">
-                        <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
-                    </form>
-             
-                    <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
-                        <input type="hidden" name="exercise_id" value="{{exercise.exercise_id}}" class="to_update">
-                        <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
-                    </form>
-                </div>
-               
-                
-                Equipments:
-                {% for equipment in exercise.equipments %}
-                {{ equipment.equipment_name }}
-                {% endfor %}
-                <br>
-                {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
-                <br>
-                <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{exercise.exercise_id}}">
+                <tr class="show-button">
+                    <td> 
+                        {{ exercise.name }}
+                        <div>
+                            {% for image in exercise.images %}
+                            <img src="{{ image.image_link }}" height="80" width="80">
+                            {% endfor %}
+                        </div>
+                        <div class = "row">
+                            <form action='/deleteexercises/{{exercise.exercise_id}}' method="POST" class="delete-exericise">
+                                <input type="hidden" name="workout_id" value="{{exercise.exercise_id}}" workout_id="{{workouts.workout_id}}" exercise_id="{{exercise.exercise_id}}" class="to_delete">
+                                <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                            <form action='/updateexercises/{{exercise.exercise_id}}' class="update-exercise">
+                                <input type="hidden" name="workout_id" value="{{exercise.exercise_id}}" workout_id="{{workouts.workout_id}}" exercise_id="{{exercise.exercise_id}}" class="to_update">
+                                <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
+                            </form>
+                        </div>
+
+                        Equipments:
+                        {% for equipment in exercise.equipments %}
+                        {{ equipment.equipment_name }}
+                        {% endfor %}
+                        <br>
+                        {{ exercise.set_number }} x {{ exercise.rep_number }} {{ exercise.rep_unit.rep_unit_name }} at {{ exercise.weight }} {{ exercise.weight_unit.weight_unit_name }}
+                        <br>
+                        <button type="button" class="btn btn-primary description-button" data-toggle="modal" data-target="#exampleModalLong" data-exercise_id="{{ exercise.exercise_id }}">
                           Instructions</button>
 
                         <!-- Modal -->
-                <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle"> </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        
-                      </div>
-                    </div>
-                  </div>
-                </div>
-            </div>
-               
-                
+                        <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLongTitle"> </h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
                 {% endfor %}
-                {% endif %}
-            </td>
-        </tr>
-        <br>
-        {% endfor %}
-    </table>
+                <br>
+                {% endfor %}
+            </table>
 
-    <div class="detail-form col-2" id="c3" style="border-radius: 15px;">
-        <form id="detail-form" action="/addexercises" method="POST">
-            <p>
-                <br>
-                <label> Select set number</label>
-                <select name="numberofsets" id="set">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                </select>
-                <br>
-                <label> Enter reps for each set</label>
-                <input type="text" name="reps" id="rep" required>
-                <select name="repunit" id="repunit">
-                    <option value="Kilometers">Kilometers</option>
-                    <option value="Miles">Miles</option>
-                    <option value="Minutes">Minutes</option>
-                    <option value="Repetitions">Repetitions</option>
-                    <option value="Seconds">Seconds</option>
-                    <option value="Until Failure">Until Failure</option>
-                </select>
-                <br>
-                <label> Enter weights for each rep</label>
-                <input type="text" name="weights" id="weights">
-                <select name="weightunit" id="weightunit">
-                    <option value="Body Weight">Body Weight</option>
-                    <option value="kg">kg</option>
-                    <option value="Kilometers Per Hour">Kilometers Per Hour</option>
-                    <option value="lb">lb</option>
-                    <option value="Miles Per Hour">Miles Per Hour</option>
-                    <option value="Plates">Plates</option>
-                </select>
-            </p>
-            <div>
-            <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+            <div class="detail-form" id="c3" style="border-radius: 15px;">
+                <form id="detail-form" action="/addexercises" method="POST">
+                    <p>
+                        <br>
+                        <label> Select set number</label>
+                        <select name="numberofsets" id="set">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <br>
+                        <label> Enter reps for each set</label>
+                        <input type="text" name="reps" id="rep" required>
+                        <select name="repunit" id="repunit">
+                            <option value="Kilometers">Kilometers</option>
+                            <option value="Miles">Miles</option>
+                            <option value="Minutes">Minutes</option>
+                            <option value="Repetitions">Repetitions</option>
+                            <option value="Seconds">Seconds</option>
+                            <option value="Until Failure">Until Failure</option>
+                        </select>
+                        <br>
+                        <label> Enter weights for each rep</label>
+                        <input type="text" name="weights" id="weights">
+                        <select name="weightunit" id="weightunit">
+                            <option value="Body Weight">Body Weight</option>
+                            <option value="kg">kg</option>
+                            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+                            <option value="lb">lb</option>
+                            <option value="Miles Per Hour">Miles Per Hour</option>
+                            <option value="Plates">Plates</option>
+                        </select>
+                    </p>
+                    <div>
+                    <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+                    </div>
+                </form>
             </div>
-        </form>
-    </div>
-    <div id='calendar' class="col-6"></div>
+            <div id='calendar' class="col-6"></div>
 
-    <div class="row">
-        <form id="createworkoutform" action="/create_workout" method="POST">
-            <input type="submit" value="Add a training day" class="btn-primary">
-        </form>
+            <div class="row">
+                <form id="createworkoutform" action="/create_workout" method="POST">
+                    <input type="submit" value="Add a training day" class="btn-primary">
+                </form>
+            </div>
+        </div>
     </div>
-    </div>
-    <script>
-            $(document).ready(function() {
+</body>
+
+<script>
+    $(document).ready(function() {
         let events = [];
         {% for workout in workout_schedule %}
         event = {};
@@ -160,7 +157,7 @@
 
         event.description = ''
         {% for exercise in workout.exercises %}
-            event.description += '<li class="exercise-calendar">{{ exercise.name }}</li>'
+        event.description += '<li class="exercise-calendar">{{ exercise.name }}</li>'
         {% endfor %}
         console.log(event.description)
 
@@ -172,23 +169,23 @@
                 close: 'fa-times',
                 prev: 'fa-chevron-left',
                 next: 'fa-chevron-right',
-                
             },
             height: 650,
             aspectRatio: 1,
             events: events,
             editable: true,
             themeSystem:'bootstrap4',
+
             eventDrop: function(event, dayDelta, revertFunc) {
                 let msg = "Are you sure you want to move the workout \"" +
-                        event.title +
-                        "\" to " +
-                        event.start.format() +
-                        "?"
-                if (!confirm(msg)) {
-                    revertFunc();
-                }
-                else {
+                    event.title +
+                    "\" to " +
+                    event.start.format() +
+                    "?"
+                    if (!confirm(msg)) {
+                        revertFunc();
+                    }
+                    else {
                     $.ajax({
                         url: '/reschedule_workout',
                         data: {
@@ -202,7 +199,6 @@
                     });
                 }
             },
-
             eventRender: function(event, $el) {
                 $el.popover({
                     title: event.title,
@@ -213,33 +209,36 @@
                     placement: 'top',
                     container: '#calendar'
                 });
-                
             },
-
             eventClick: function(event, jsEvent, view) {
                 location.href = '/click_day_details/' + event.id
-            
             }
-            
         });
     });
-    </script>
+</script>
 <!--     <script src="../static/workout_schedule_today.js"></script> -->
-    <script>
-        $(function() {
+<script>
+    $(function() {
         $('.update-exercise').on('submit', function(evt) {
             evt.preventDefault();
             const $this = $(this);
-            const exercise_id = $this.find('.to_update').val();
+            const workout_id = $this.find('.to_update').attr('workout_id');
+            const exercise_id = $this.find('.to_update').attr('exercise_id');
             console.log(exercise_id)
-            $.get('/search/' + exercise_id);
+            console.log(workout_id)
+            const formData = {
+                workout_id: workout_id
+            }
+
+            $.get('/search/' + exercise_id, formData);
             $('#detail-form').attr('data-id', exercise_id);
             $('.detail-form').toggle();
         });
     });
-    </script>
-    <script>
-        $(function(revertFunc) {
+</script>
+
+<script>
+    $(function(revertFunc) {
         $('.delete-exericise').on('submit', function(evt) {
             evt.preventDefault();
             const $this = $(this);
@@ -260,9 +259,10 @@
             }
         });
     });
-    </script>
-    <script>
-        $(function() {
+</script>
+
+<script>
+    $(function() {
         $('.detail-form').on('submit', function(evt) {
             evt.preventDefault();
             const $this = $(this);
@@ -281,47 +281,40 @@
                $('.detail-form').toggle();
 
             });
-            
-
         });
     });
+</script>
 
-    </script>
-    <script>
-        $(function(){
-        $('.description-button').on('click', function(evt){
-                
-                const $this = $(this);
-        
-                const exercise_id = $this.data('exercise_id');
-                console.log(exercise_id);
-                $.get('/exercises_description.json' + '/' + exercise_id, (results)=>{
-                    const exercises_description = results;
-
-                    $('.modal-body').html(exercises_description);
-                });
-            });
-        });
-    </script>
-    <script>
-        $(function(){
-        $('.description-button').on('click', function(evt){
-                
-                const $this = $(this);
-        
-                const exercise_id = $this.data('exercise_id');
-                console.log(exercise_id);
-                $.get('/exercises_name.json' + '/' + exercise_id, (results)=>{
-                    const exercises_name = results;
-
-                    $('.modal-title').html(exercises_name);
-                });
-            });
-        });
-    </script>
-
+<script>
+    $(function() {
+        $('.description-button').on('click', function(evt) {
+            const $this = $(this);
     
-</div>
-</div>
-</body>
+            const exercise_id = $this.data('exercise_id');
+            console.log(exercise_id);
+            $.get('/exercises_description.json' + '/' + exercise_id, (results)=>{
+                const exercises_description = results;
+
+                $('.modal-body').html(exercises_description);
+            });
+        });
+    });
+</script>
+
+<script>
+    $(function() {
+        $('.description-button').on('click', function(evt) {
+            const $this = $(this);
+    
+            const exercise_id = $this.data('exercise_id');
+            console.log(exercise_id);
+            $.get('/exercises_name.json' + '/' + exercise_id, (results)=>{
+                const exercises_name = results;
+
+                $('.modal-title').html(exercises_name);
+            });
+        });
+    });
+</script>
+
 {% endblock %}
