@@ -108,25 +108,12 @@ def load_weight_unit():
         db.session.add(weight_unit)
     db.session.commit()
 
-# def load_days_of_week():
-#     days_of_week_result_list = call_api("daysofweek")
-#     for result_dict in days_of_week_result_list:
-#         day_id = result_dict['id']
-#         day_of_week = result_dict['day_of_week']
 
-#         day_of_week = Schedule_Day(day_id=day_id, day_of_week=day_of_week)
-
-#         db.session.add(day_of_week)
-#     db.session.commit()
 
 if __name__ == "__main__":
     connect_to_db(app)
     db.create_all()
 
-    # set_val_user_id()
-    # valid_exercises_id_list = load_exercise()
-    # print(len(valid_exercises_id_list))
-    # load_image(valid_exercises_id_list)
     load_category()
     load_equipment()
     load_rep_unit()
@@ -134,17 +121,4 @@ if __name__ == "__main__":
     valid_exercises_id_list = load_exercise()
     print(len(valid_exercises_id_list))
     load_image(valid_exercises_id_list)
-    # load_days_of_week()
-    
-    # workout_1 = Workout(workout_id=1, priority=1, scheduled_at=1)
-    # db.session.add(workout_1)
-    # db.session.commit()
 
-    # 
-    # db.session.add(workout_exercise_1)
-    # db.session.add(workout_exercise_2)
-    # db.session.commit()
-
-    # user_1 = User(user_id=1, workout_id=1)
-    # db.session.add(user_1)
-    # db.session.commit()

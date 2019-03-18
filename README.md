@@ -1,6 +1,6 @@
 # Fitastic
 ## Project Description
-Fitastic tailors exercise recommendations based on user's preferences - targeted body parts and available equipments. It allows users to customize their workout schedules by selecting exactly which exercises they would like to do, specify how many sets, repetitions and weights. Multiple Ajax requests are used in the selection process to achieve smooth user experience. By leveraging on Javascript library FullCalendar, it offers users a much more convenient and flexible way to reschedule, preview, or modify existing workouts.
+Fitastic tailors exercise recommendations based on user's preferences - targeted body parts and available equipments. It allows users to customize their workout schedules by selecting exactly which exercises they would like to do, specifying how many sets, repetitions and weights. Multiple Ajax requests are used in the selection process to achieve smooth user experience. By leveraging on Javascript library FullCalendar, it offers users a much more convenient and flexible way to reschedule, preview, or modify existing workouts.
 ## About the Developer
 Fitastic was developed by Miao Ran Ren, a software engineer based in San Francisco Bay Area. Learn more about the developer on [LinkedIn](https://www.linkedin.com/in/mia-miao-ren-71b19a87/).
 ## Tech Stack
@@ -14,7 +14,7 @@ A motivative call-to-action button and phrase on the landing page not only attra
 
 ![alt text](static/Screenshot_2.png)
 
-After logged in, the main dashboard shows today's workout schedule with detailed info and a calendar where user can hover over to preview past or future saved workout. This calendar is called FullCalendar, a Javascript Event Calendar.
+After logged in, the main dashboard shows today's workout schedule with detailed info and a calendar where user can hover over to preview past or future saved workouts. This calendar is called FullCalendar, a Javascript Event Calendar.
 
 ![alt text](static/Screenshot_3.png)
 

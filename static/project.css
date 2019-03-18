@@ -95,7 +95,7 @@
             top:70%;
             left:60%;
             margin: -380px 50px 50px -380px;
-            background-color: #CAE4DB;
+            background-color: rgb(199,203,208);
 
         }
         #calendar {
@@ -150,7 +150,7 @@
 
         .list-group-item{
             cursor: pointer;
-            background-color: #CAE4DB;
+            background-color: rgb(199,203,208);
         }
         .row{
             padding: 10px;
