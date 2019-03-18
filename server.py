@@ -61,7 +61,6 @@ def login_process():
 @app.route('/logout')
 def logout():
     del session["user_id"]
-    flash("Logged Out.")
     return redirect('/')
 
 @app.route('/create_workout', methods=['POST'])
@@ -100,7 +99,6 @@ def add_exercises_helper(new_exercise):
     workout_id = session['workout_id']
     exercise_id = session['exercise_id']
     print("add_exercises_helper:", new_exercise, workout_id, exercise_id)
-
     current_workout = Workout.query.get(workout_id)
     exercise_setting = None
     if not new_exercise:
@@ -265,7 +263,7 @@ def exercises_name(exercise_id):
  
 if __name__ == "__main__":
 
-    app.debug = True
+    app.debug = False
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     connect_to_db(app)
