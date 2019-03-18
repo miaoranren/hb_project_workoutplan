@@ -6,7 +6,7 @@ Fitastic was developed by Miao Ran Ren, a software engineer based in San Francis
 ## Tech Stack
 Python, Flask, SQLAlchemy, HTML, CSS, Jinja, JavaScript, jQuery and AJAX, PostgreSQL, Bootstrap
 ## API Used
-Wger API(exercise data, including equipment, images, body parts, rep unit, weight unit).
+Wger API (exercise data, including equipment, images, body parts, rep unit, weight unit).
 ## Features 
 ![alt text](static/Screenshot_1.png)
 
