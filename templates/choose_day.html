@@ -17,6 +17,7 @@
         </li>
     </ul>
 </nav>
+
 <div class="container-fluid">
     <div class="choose-day">
         <h3>Add a Training Day</h3>
@@ -27,103 +28,96 @@
             <input type="submit" name="submit" value="Save" class="choose-day-button">
         </form>
     </div>
+    <div class="display-exericse">
+        <div class="exercise-form" style="width: 50%">
+            <form id="exercise-form" action="/choose_training_day" method="GET">
+                <h3>Search Exercises</h3>
+                <div class="success-info" style="display: none;">
+                    Exercise successfully added!
+                </div>
 
+                <h4>Equipment</h4>
+                <select name="equipment" class="equipment_checkboxes selectpicker">
+                    <option value="">At Gym</option>
+                    <option value="Barbell">Barbell</option>
+                    <option value="Bench">Bench</option>
+                    <option value="Dumbbell">Dumbbell</option>
+                    <option value="Gym mat">Gym mat</option>
+                    <option value="Incline bench">Incline bench</option>
+                    <option value="Kettlebell">Kettlebell</option>
+                    <option value="none (bodyweight exercise)">none (bodyweight exercise)</option>
+                    <option value="Pull-up bar">Pull-up bar</option>
+                    <option value="Swiss Ball">Swiss Ball</option>
+                    <option value="SZ-Bar">SZ-Bar</option>
+                </select>
 
-<div class="display-exericse">
-   
-<div class="exercise-form" style="width: 50%">
+                <h4>Body Parts</h4>
+                <select name="category" class="category_checkboxes selectpicker">
+                    <option value="Abs">Abs</option>
+                    <option value="Arms">Arms</option>
+                    <option value="Back">Back</option>
+                    <option value="Calves">Calves</option>
+                    <option value="Chest">Chest</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Shoulders">Shoulders</option>
+                </select>
 
+                <div>
+                    <br>
+                    <input id="exercise_submit" type="submit" name="submit">
+                </div>
+            </form>
+        </div>
 
-<form id="exercise-form" action="/choose_training_day" method="GET">
-    <h3>Search Exercises</h3>
-     <div class="success-info" style="display: none;">
-    Exercise successfully added!
+        <div class="row" style="width: 50%">
+            <div id="exercise_result" style="width: 100%" >
+            </div>
+        </div>
     </div>
-    <h4>Equipment</h4>
-    <select name="equipment" class="equipment_checkboxes selectpicker">
-        <option value="">At Gym</option>
-        <option value="Barbell">Barbell</option>
-        <option value="Bench">Bench</option>
-        <option value="Dumbbell">Dumbbell</option>
-        <option value="Gym mat">Gym mat</option>
-        <option value="Incline bench">Incline bench</option>
-        <option value="Kettlebell">Kettlebell</option>
-        <option value="none (bodyweight exercise)">none (bodyweight exercise)</option>
-        <option value="Pull-up bar">Pull-up bar</option>
-        <option value="Swiss Ball">Swiss Ball</option>
-        <option value="SZ-Bar">SZ-Bar</option>
-        
-    </select>
-    <h4>Body Parts</h4>
-    <select name="category" class="category_checkboxes selectpicker">
-        <option value="Abs">Abs</option>
-        <option value="Arms">Arms</option>
-        <option value="Back">Back</option>
-        <option value="Calves">Calves</option>
-        <option value="Chest">Chest</option>
-        <option value="Legs">Legs</option>
-        <option value="Shoulders">Shoulders</option>
-        
-    </select>
-     <div>
-    <br>
-    <input id="exercise_submit" type="submit" name="submit">
-    </div>
-</form>
-    </div>
-    <div class="row" style="width: 50%">
-    <div id="exercise_result" style="width: 100%" >
-    </div>
-    </div>
-</div>
 
-<div class="detail-form" style="border-radius: 15px">
-    <form id="detail-form" action="/addexercises" method="POST">
-    <p>
-        <br>
-        <label> Select set number</label>
-        <select name="numberofsets" id="set">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-        </select>
-        <br>
-        <label> Enter reps for each set</label>
-        <input type="text" name="reps" id="rep" required>
-        <select name="repunit" id="repunit">
-            <option value="Kilometers">Kilometers</option>
-            <option value="Miles">Miles</option>
-            <option value="Minutes">Minutes</option>
-            <option value="Repetitions">Repetitions</option>
-            <option value="Seconds">Seconds</option>
-            <option value="Until Failure">Until Failure</option>
-        </select>
+    <div class="detail-form" style="border-radius: 15px">
+        <form id="detail-form" action="/addexercises" method="POST">
+            <p>
+                <br>
+                <label> Select set number</label>
+                <select name="numberofsets" id="set">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                <br>
 
-        <br>
-        <label> Enter weights for each rep</label>
-        <input type="text" name="weights" id="weights">
-        <select name="weightunit" id="weightunit">
-            <option value="Body Weight">Body Weight</option>
-            <option value="kg">kg</option>
-            <option value="Kilometers Per Hour">Kilometers Per Hour</option>
-            <option value="lb">lb</option>
-            <option value="Miles Per Hour">Miles Per Hour</option>
-            <option value="Plates">Plates</option>
-        </select>
+                <label> Enter reps for each set</label>
+                <input type="text" name="reps" id="rep" required>
+                <select name="repunit" id="repunit">
+                    <option value="Kilometers">Kilometers</option>
+                    <option value="Miles">Miles</option>
+                    <option value="Minutes">Minutes</option>
+                    <option value="Repetitions">Repetitions</option>
+                    <option value="Seconds">Seconds</option>
+                    <option value="Until Failure">Until Failure</option>
+                </select>
+                <br>
 
-    </p>
-    <div>
-        <!-- <a href="/search/{}"> --><input type="submit" name="submit">
+                <label> Enter weights for each rep</label>
+                <input type="text" name="weights" id="weights">
+                <select name="weightunit" id="weightunit">
+                    <option value="Body Weight">Body Weight</option>
+                    <option value="kg">kg</option>
+                    <option value="Kilometers Per Hour">Kilometers Per Hour</option>
+                    <option value="lb">lb</option>
+                    <option value="Miles Per Hour">Miles Per Hour</option>
+                    <option value="Plates">Plates</option>
+                </select>
+            </p>
+            <div>
+                <input type="submit" name="submit">
+            </div>
+        </form>
     </div>
-    
-
-</form>
-</div>
-
 </body>
 
 <script src="../static/choose_day.js"></script>
-
 
 {% endblock %}

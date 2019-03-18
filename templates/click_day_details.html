@@ -27,9 +27,7 @@
             {% endif %}
         </tr>
     </thead>
-    {% if not workout %}
-    No workout scheduled
-    {% else %}
+    {% if workout %}
     {% for exercise_setting in workout.exercise_settings %}
     <tr class="show-button">
         <td> 
@@ -40,12 +38,12 @@
                 {% endfor %}
             </div>
             <div class = "row">
-                <form action='/deleteexercises/{{exercise_setting.exercise_id}}' method="POST" class="delete-exericise">
-                    <input type="hidden" name="exercise_id" value="{{exercise_setting.exercise_id}}" class="to_delete">
+                <form action='/deleteexercises/{{exercise_setting.exercise_setting_id}}' method="POST" class="delete-exericise">
+                    <input type="hidden" name="exercise_id" workout_id="{{workout.workout_id}}" es_id="{{exercise_setting.exercise_setting_id}}" class="to_delete">
                     <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
                 </form>
                 <form action='/updateexercises/{{exercise_setting.exercise_id}}' class="update-exercise">
-                    <input type="hidden" name="exercise_id" value="{{exercise_setting.exercise_id}}" class="to_update">
+                    <input type="hidden" name="exercise_id" workout_id="{{workout.workout_id}}" exercise_id="{{exercise_setting.exercise_id}}" class="to_update">
                     <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
                 </form>
             </div>
@@ -129,7 +127,6 @@
     </form>
 <div>
 </body>
-
 
 <script src="../static/click_day_clicks.js"></script>
 

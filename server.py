@@ -159,24 +159,22 @@ def todaydashboard():
     workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
     day_workout_list = fill_day_work_list(workout_schedule)
     print(day_workout_list[today_date])
-
-
     return render_template("workout_schedule_today.html",  day_workout_list=day_workout_list, workout_schedule=workout_schedule, today_date=today_date)
 
-@app.route('/deleteexercises/<int:exercise_id>', methods=['POST'])
-def delete_exercise(exercise_id):
+@app.route('/deleteexercises/<int:es_id>', methods=['POST'])
+def delete_exercise(es_id):
     if session["user_id"]:
-        exercise_to_delete = Exercise.query.get(exercise_id)
-        workout_schedule = Workout.query.filter(Workout.user_id == session['user_id']).all()
-
-        db.session.delete(exercise_to_delete)
-        db.session.commit()
-
-        for workout in workout_schedule:
-            if not workout.exercises:
-                db.session.delete(workout)
+        workout_id = request.form.get('workout_id')
+        workout = Workout.query.get(workout_id)
+        for es in workout.exercise_settings:
+            if es.exercise_setting_id == es_id:
+                db.session.delete(es)
                 db.session.commit()
-       
+                break
+
+        if not workout.exercise_settings:
+            db.session.delete(workout)
+            db.session.commit()
         return ('', 204)
     else:
         return redirect('/')

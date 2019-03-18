@@ -37,11 +37,11 @@
                 </td>
                 {% endif %}
 
-                {% for workouts in day_workout_list[today_date] %}
+                {% for workout in day_workout_list[today_date] %}
                 <td>
-                    <h3>{{ workouts.description }}</h3>
+                    <h3>{{ workout.description }}</h3>
                 </td>
-                {% for exercise_setting in workouts.exercise_settings %}
+                {% for exercise_setting in workout.exercise_settings %}
                 <tr class="show-button">
                     <td> 
                         {{ exercise_setting.exercise.name }}
@@ -51,12 +51,12 @@
                             {% endfor %}
                         </div>
                         <div class = "row">
-                            <form action='/deleteexercises/{{exercise_setting.exercise_id}}' method="POST" class="delete-exericise">
-                                <input type="hidden" name="workout_id" value="{{exercise_setting.exercise_id}}" workout_id="{{workouts.workout_id}}" exercise_id="{{exercise_setting.exercise_id}}" class="to_delete">
+                            <form action='/deleteexercises/{{exercise_setting.exercise_setting_id}}' method="POST" class="delete-exericise">
+                                <input type="hidden" name="workout_id" workout_id="{{workout.workout_id}}" es_id="{{exercise_setting.exercise_setting_id}}" class="to_delete">
                                 <button type="submit" value="Delete" class="form-submit-button btn navbar-btn btn-default"><i class="fas fa-trash-alt"></i></button>
                             </form>
                             <form action='/updateexercises/{{exercise_setting.exercise_id}}' class="update-exercise">
-                                <input type="hidden" name="workout_id" value="{{exercise_setting.exercise_id}}" workout_id="{{workouts.workout_id}}" exercise_id="{{exercise_setting.exercise_id}}" class="to_update">
+                                <input type="hidden" name="workout_id" workout_id="{{workout.workout_id}}" exercise_id="{{exercise_setting.exercise_id}}" class="to_update">
                                 <button type="submit" value="Update" class="form-submit-button btn navbar-btn btn-primary"><i class="fas fa-edit"></i></button>
                             </form>
                         </div>
@@ -224,8 +224,9 @@
             const $this = $(this);
             const workout_id = $this.find('.to_update').attr('workout_id');
             const exercise_id = $this.find('.to_update').attr('exercise_id');
-            console.log(exercise_id)
-            console.log(workout_id)
+            console.log("workout_id:", workout_id);
+            console.log("exercise_id:", exercise_id);
+
             const formData = {
                 workout_id: workout_id
             }
@@ -244,16 +245,19 @@
             const $this = $(this);
             console.log($this);
             const msg = "Are you sure to delete this exercise?";
-            // const exercise_id = $this.data('id');
-            const exercise_id = $this.find('.to_delete').val();
-            console.log("exercise_id:", exercise_id);
-            // const exercise_id = $('.to_delete').val();
+            const workout_id = $this.find('.to_delete').attr('workout_id');
+            const es_id = $this.find('.to_delete').attr('es_id');
+            console.log("workout_id:", workout_id);
+            console.log("es_id:", es_id);
 
             if (!confirm(msg)) {
                 revertFunc();
             }
             else {
-                $.post('/deleteexercises' + '/'+ exercise_id, (results) => {
+                const formData = {
+                    workout_id: workout_id
+                }
+                $.post('/deleteexercises' + '/'+ es_id, formData, (results) => {
                     location.reload();
                 });
             }
