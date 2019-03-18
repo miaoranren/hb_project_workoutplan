@@ -108,5 +108,5 @@ $ python3 server.py
 ```
 
 ## Looking Forward
-* 
-* 
+* Add an "exercise log" feature so that it could record user's progress.
+
