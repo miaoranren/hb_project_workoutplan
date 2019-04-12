@@ -125,15 +125,6 @@ class WorkoutExerciseSetting(db.Model):
     def __repr__(self):
         return f"<{self.workout_id} has {self.exercise_setting_id}>"
 
-# class WorkoutExercise(db.Model):
-#     __tablename__ = 'workout_exercise'
-
-#     table_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.workout_id"), nullable=False)
-#     exercise_id = db.Column(db.Integer, db.ForeignKey("exercises.exercise_id"), nullable=False)
-
-#     def __repr__(self):
-#         return f"<{self.workout_id} has {self.exercise_id}>"
 
 class Weight_Unit(db.Model):
     __tablename__ = 'weight_unit'

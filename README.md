@@ -1,12 +1,19 @@
 # Fitastic
 ## Project Description
 Fitastic tailors exercise recommendations based on user's preferences - targeted body parts and available equipments. It allows users to customize their workout schedules by selecting exactly which exercises they would like to do, specifying how many sets, repetitions and weights. Multiple Ajax requests are used in the selection process to achieve smooth user experience. By leveraging on Javascript library FullCalendar, it offers users a much more convenient and flexible way to reschedule, preview, or modify existing workouts.
+
 ## About the Developer
 Fitastic was developed by Miao Ran Ren, a software engineer based in San Francisco Bay Area. Learn more about the developer on [LinkedIn](https://www.linkedin.com/in/mia-miao-ren-71b19a87/).
+
 ## Tech Stack
 Python, Flask, SQLAlchemy, HTML, CSS, Jinja, JavaScript, jQuery and AJAX, PostgreSQL, Bootstrap
+
 ## API Used
 Wger API (exercise data, including equipment, images, body parts, rep unit, weight unit).
+
+## Data Modeling
+![alt text](static/QuickDBD-Fitastic (2).png)
+
 ## Features 
 ![alt text](static/Screenshot_1.png)
 
@@ -45,9 +52,7 @@ On the main dashboard, user can click "choose a training day" to create a new wo
 ![alt text](static/Screenshot_11.png)
 ![alt text](static/Screenshot_12.png)
 
-
 After user finishes choosing the training date, while guiding the user select exercises based on perferences - body parts they want to focus on, and available equipments, multiple AJAX requests are done so that exercises could dynamically display and user could add multiple exercises to the workout without reloading the page. Even more, user could specify the rep, set, weight info for the selected exercise on the current page to achieve smooth user experience.
-
 
 
 ## Setup/Installation
@@ -109,4 +114,3 @@ $ python3 server.py
 
 ## Looking Forward
 * Add an "exercise log" feature so that it could record user's progress.
-
