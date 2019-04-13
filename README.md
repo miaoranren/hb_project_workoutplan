@@ -12,7 +12,7 @@ Python, Flask, SQLAlchemy, HTML, CSS, Jinja, JavaScript, jQuery and AJAX, Postgr
 Wger API (exercise data, including equipment, images, body parts, rep unit, weight unit).
 
 ## Data Modeling
-![alt text](static/QuickDBD-Fitastic (2).png)
+![alt text](static/QuickDBD-Fitastic.png)
 
 ## Features 
 ![alt text](static/Screenshot_1.png)
